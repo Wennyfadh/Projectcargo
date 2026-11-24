@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'app_title' => 'CargoTrace',
+    'app_subtitle' => 'Visibilité Logistique Globale · PT Mayora Indah Tbk',
+    'nav' => [
+        'dashboard' => 'Tableau de bord',
+        'shipments' => 'Expéditions',
+        'currency' => 'Taux de Change',
+        'tracking' => 'Suivi en direct',
+        'exceptions' => 'Exceptions',
+        'carriers' => 'Transporteurs',
+        'reports' => 'Rapports',
+        'logout' => 'Déconnexion',
+        'search_placeholder' => 'Rechercher un envoi, conteneur...',
+    ],
+    'ticker' => [
+        'live' => 'MARCHÉS & OPÉRATIONS EN DIRECT',
+        'world_clocks' => 'HORLOGES MONDIALES',
+        'port_weather' => 'MÉTÉO DES PORTS',
+        'fx_rates' => 'TAUX DE CHANGE EN TEMPS RÉEL',
+        'policy_rates' => 'TAUX DIRECTEURS DES BANQUES CENTRALES',
+        'news' => 'ACTUALITÉS MARITIMES & COMMERCE',
+        'detail_modal' => 'Détails Marchés & Devises',
+    ],
+    'tracking' => [
+        'en_route_to' => 'En route vers',
+        'live_signal' => 'Signal Satellite AIS : Actif',
+        'recenter' => 'Recentrer sur le Navire',
+        'sync_api' => 'Synchroniser API',
+        'traversed' => 'Trajet Parcouru',
+        'remaining' => 'Trajet Restant',
+        'vessel' => 'Navire',
+        'voyage' => 'Voyage',
+        'speed' => 'Vitesse',
+        'eta' => 'Arrivée Estimée',
+    ],
+    'financial' => [
+        'rates_title' => 'Taux de Change Export',
+        'interest_rates_title' => 'Taux Directeurs des Banques Centrales',
+        'converter_title' => 'Calculateur de Devises Mayora',
+        'amount' => 'Montant',
+        'convert' => 'Convertir',
+        'result' => 'Résultat Estimé',
+        'last_updated' => 'Actualisé en direct via Frankfurter & Open-Meteo API',
+    ],
+];

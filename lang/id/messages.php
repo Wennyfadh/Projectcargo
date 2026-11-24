@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'app_title' => 'CargoTrace',
+    'app_subtitle' => 'Visibilitas Logistik Global PT Mayora Indah Tbk',
+    'nav' => [
+        'dashboard' => 'Dashboard',
+        'shipments' => 'Pengiriman (Shipments)',
+        'currency' => 'Kurs Real-Time',
+        'tracking' => 'Pelacakan (Tracking)',
+        'exceptions' => 'Kendala (Exceptions)',
+        'carriers' => 'Pelayaran (Carriers)',
+        'reports' => 'Laporan (Reports)',
+        'logout' => 'Keluar',
+        'search_placeholder' => 'Cari no. pengiriman, kontainer, B/L...',
+    ],
+    'ticker' => [
+        'live' => 'LIVE PASAR & OPERASI',
+        'world_clocks' => 'WAKTU DUNIA',
+        'port_weather' => 'SUHU PELABUHAN',
+        'fx_rates' => 'KURS VALAS REAL-TIME',
+        'policy_rates' => 'SUKU BUNGA ACUAN BANK SENTRAL',
+        'news' => 'BERITA GLOBAL & MARITIM',
+        'detail_modal' => 'Detail Pasar & Kurs',
+    ],
+    'tracking' => [
+        'en_route_to' => 'Dalam perjalanan ke',
+        'live_signal' => 'Sinyal Satelit AIS: Aktif',
+        'recenter' => 'Pusatkan ke Kapal',
+        'sync_api' => 'Sinkronisasi API',
+        'traversed' => 'Rute Terlewati',
+        'remaining' => 'Rute Menuju Tujuan',
+        'vessel' => 'Kapal',
+        'voyage' => 'Pelayaran',
+        'speed' => 'Kecepatan',
+        'eta' => 'Estimasi Tiba',
+    ],
+    'financial' => [
+        'rates_title' => 'Kurs Valuta Asing Ekspor',
+        'interest_rates_title' => 'Suku Bunga Acuan Pasar Uang & Ekspor',
+        'converter_title' => 'Kalkulator Konversi Valas Mayora',
+        'amount' => 'Nominal',
+        'convert' => 'Konversi',
+        'result' => 'Hasil Estimasi',
+        'last_updated' => 'Diperbarui otomatis secara real-time via API Frankfurter & Open-Meteo',
+    ],
+];

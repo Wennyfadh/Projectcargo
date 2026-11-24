@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'app_title' => 'CargoTrace',
+    'app_subtitle' => 'Visibilidad Logística Global · PT Mayora Indah Tbk',
+    'nav' => [
+        'dashboard' => 'Panel de Control',
+        'shipments' => 'Envíos Globales',
+        'currency' => 'Tipos de Cambio',
+        'tracking' => 'Rastreo en Vivo',
+        'exceptions' => 'Excepciones',
+        'carriers' => 'Navieras',
+        'reports' => 'Informes',
+        'logout' => 'Cerrar Sesión',
+        'search_placeholder' => 'Buscar número de envío, contenedor...',
+    ],
+    'ticker' => [
+        'live' => 'MERCADOS Y OPERACIONES EN VIVO',
+        'world_clocks' => 'RELOJES MUNDIALES',
+        'port_weather' => 'CLIMA PORTUARIO',
+        'fx_rates' => 'TIPOS DE CAMBIO EN TIEMPO REAL',
+        'policy_rates' => 'TASAS DE INTERÉS DE BANCOS CENTRALES',
+        'news' => 'NOTICIAS MARÍTIMAS Y COMERCIO',
+        'detail_modal' => 'Detalles de Mercado y Divisas',
+    ],
+    'tracking' => [
+        'en_route_to' => 'En camino a',
+        'live_signal' => 'Señal Satelital AIS: Activa',
+        'recenter' => 'Centrar en el Buque',
+        'sync_api' => 'Sincronizar API',
+        'traversed' => 'Ruta Recorrida',
+        'remaining' => 'Ruta Hacia Destino',
+        'vessel' => 'Buque',
+        'voyage' => 'Viaje',
+        'speed' => 'Velocidad',
+        'eta' => 'Llegada Estimada',
+    ],
+    'financial' => [
+        'rates_title' => 'Tipos de Cambio de Exportación',
+        'interest_rates_title' => 'Tasas de Interés de Bancos Centrales',
+        'converter_title' => 'Calculadora de Divisas Mayora',
+        'amount' => 'Monto',
+        'convert' => 'Convertir',
+        'result' => 'Resultado Estimado',
+        'last_updated' => 'Actualizado en tiempo real vía API Frankfurter & Open-Meteo',
+    ],
+];

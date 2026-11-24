@@ -1,0 +1,82 @@
+{
+  "info": {
+    "name": "CargoTrace API Collection",
+    "description": "Collection for CargoTrace shipment visibility and tracking platform.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Cargo User\",\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"password_confirmation\": \"Password123!\",\n  \"role\": \"customer\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/register", "host": ["{{baseUrl}}"], "path": ["api", "register"] }
+      }
+    },
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"operator@cargotrace.mayora.co.id\",\n  \"password\": \"Password123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/login", "host": ["{{baseUrl}}"], "path": ["api", "login"] }
+      }
+    },
+    {
+      "name": "Shipments - List",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+        "url": {
+          "raw": "{{baseUrl}}/api/shipments?status=IN_TRANSIT&search=CT-MYR&page=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "shipments"],
+          "query": [
+            { "key": "status", "value": "IN_TRANSIT" },
+            { "key": "search", "value": "CT-MYR" },
+            { "key": "page", "value": "1" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Shipments - Create",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shipment_number\": \"CT-MYR-2026-050\",\n  \"customer_id\": 4,\n  \"carrier_id\": 1,\n  \"origin_location_id\": 3,\n  \"destination_location_id\": 48,\n  \"cargo_type\": \"FCL\",\n  \"container_type\": \"40HC\",\n  \"status\": \"CREATED\",\n  \"expected_departure_at\": \"2026-11-20 08:00:00\",\n  \"expected_arrival_at\": \"2026-11-30 16:00:00\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/api/shipments", "host": ["{{baseUrl}}"], "path": ["api", "shipments"] }
+      }
+    },
+    {
+      "name": "Locations - List",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/locations", "host": ["{{baseUrl}}"], "path": ["api", "locations"] }
+      }
+    },
+    {
+      "name": "Carriers - List",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/carriers", "host": ["{{baseUrl}}"], "path": ["api", "carriers"] }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8000" },
+    { "key": "token", "value": "" }
+  ]
+}

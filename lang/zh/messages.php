@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'app_title' => 'CargoTrace',
+    'app_subtitle' => '印尼迈大集团（PT Mayora Indah Tbk）全球物流追踪平台',
+    'nav' => [
+        'dashboard' => '控制台 (Dashboard)',
+        'shipments' => '货物运输 (Shipments)',
+        'currency' => '实时汇率监测 (FX)',
+        'tracking' => '实时航运追踪 (Tracking)',
+        'exceptions' => '异常与延误 (Exceptions)',
+        'carriers' => '合作船运公司 (Carriers)',
+        'reports' => '运营报表 (Reports)',
+        'logout' => '登出系统',
+        'search_placeholder' => '搜索运单号、集装箱号或提单号...',
+    ],
+    'ticker' => [
+        'live' => '全球市场与运营实时资讯',
+        'world_clocks' => '全球时区',
+        'port_weather' => '国际港口天气',
+        'fx_rates' => '外汇实时汇率',
+        'policy_rates' => '全球央行基准利率',
+        'news' => '国际航运与供应链动态',
+        'detail_modal' => '汇率与市场详情',
+    ],
+    'tracking' => [
+        'en_route_to' => '正驶向目标港口',
+        'live_signal' => 'AIS卫星追踪信号：正常',
+        'recenter' => '聚焦船舶位置',
+        'sync_api' => '同步实时API',
+        'traversed' => '已航行航线',
+        'remaining' => '待航行航线',
+        'vessel' => '集装箱轮',
+        'voyage' => '航次',
+        'speed' => '航速',
+        'eta' => '预计到达时间',
+    ],
+    'financial' => [
+        'rates_title' => '出口贸易实时汇率表',
+        'interest_rates_title' => '主要经济体央行基准利率',
+        'converter_title' => '迈大集团外汇估算计算器',
+        'amount' => '兑换金额',
+        'convert' => '立即换算',
+        'result' => '换算结果',
+        'last_updated' => '通过 Frankfurter 与 Open-Meteo API 实时更新',
+    ],
+];

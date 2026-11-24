@@ -1,0 +1,47 @@
+<?php
+
+return [
+    'app_title' => 'CargoTrace',
+    'app_subtitle' => 'Global Logistics Visibility · PT Mayora Indah Tbk',
+    'nav' => [
+        'dashboard' => 'Dashboard',
+        'shipments' => 'Shipments',
+        'currency' => 'Real-Time FX',
+        'tracking' => 'Live Tracking',
+        'exceptions' => 'Exceptions',
+        'carriers' => 'Carriers',
+        'reports' => 'Reports',
+        'logout' => 'Log Out',
+        'search_placeholder' => 'Search shipment, container, B/L...',
+    ],
+    'ticker' => [
+        'live' => 'LIVE MARKET & OPS',
+        'world_clocks' => 'WORLD CLOCKS',
+        'port_weather' => 'PORT WEATHER',
+        'fx_rates' => 'REAL-TIME FX RATES',
+        'policy_rates' => 'CENTRAL BANK POLICY RATES',
+        'news' => 'MARITIME & SUPPLY CHAIN NEWS',
+        'detail_modal' => 'Market & FX Details',
+    ],
+    'tracking' => [
+        'en_route_to' => 'En route to',
+        'live_signal' => 'AIS Satellite Signal: Active',
+        'recenter' => 'Re-center on Vessel',
+        'sync_api' => 'Sync API Data',
+        'traversed' => 'Traversed Path',
+        'remaining' => 'Forward Destination Path',
+        'vessel' => 'Vessel',
+        'voyage' => 'Voyage',
+        'speed' => 'Speed',
+        'eta' => 'Estimated Arrival',
+    ],
+    'financial' => [
+        'rates_title' => 'Export Foreign Exchange Rates',
+        'interest_rates_title' => 'Central Bank Policy & Benchmark Rates',
+        'converter_title' => 'Mayora Export Currency Calculator',
+        'amount' => 'Amount',
+        'convert' => 'Convert',
+        'result' => 'Estimated Output',
+        'last_updated' => 'Live auto-synced via Frankfurter & Open-Meteo API',
+    ],
+];
