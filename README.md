@@ -1,25 +1,25 @@
-# 🚢 CargoTrace — Global Export Logistics Visibility Platform
+CargoTrace — Global Export Logistics Visibility Platform
 
 > **PT Mayora Indah Tbk Export Supply Chain & Cargo Visibility Platform**  
 > Built with Laravel 12, Tailwind CSS, Leaflet.js OpenStreetMap, Chart.js, and Real-Time Multi-Currency & Telemetry Streaming.
 
 ---
 
-## 🌟 Overview
+Overview
 
 **CargoTrace** is an enterprise-grade shipment visibility and supply chain management web application tailored for **PT Mayora Indah Tbk**'s international export operations. The platform monitors multi-modal cargo movements (Sea, Air, Land) across 100+ export destination countries, providing real-time tracking, foreign exchange volatility risk monitoring, multilingual support, and telemetry feeds.
 
 ---
 
-## 🚀 Key Features
+Key Features
 
-### 1. 🗺️ Multi-Modal Live Tracking & Visual Maps
+1. Multi-Modal Live Tracking & Visual Maps
 - **Uniform Multi-Modal Animation**: Synchronized pulse radar waves (2.4s rhythm) and custom SVGs for **Laut (Kapal)**, **Udara (Pesawat)**, and **Darat (Mobil Truk)**.
 - **Interactive OpenStreetMap (Leaflet.js)**: Real GPS coordinates and UN/LOCODE ports (Tanjung Priok, Port of Rotterdam, Port of Los Angeles, Manila, etc.).
 - **Dynamic Waypoints & Status Callouts**: Live route polylines, nautical markers, weather integration (Open-Meteo API), and vessel telemetry.
 - **Deterministic ETA & Delay Engine**: Categorizes delays into `ON_TIME`, `LOW_DELAY`, `MEDIUM_DELAY`, and `HIGH_DELAY` with automated delay reasons.
 
-### 2. 💱 100% Real-Time Multi-Currency Monitoring (Zero Hardcoding)
+2. 💱 100% Real-Time Multi-Currency Monitoring (Zero Hardcoding)
 - **Live External API Data**: Fetches genuine real-time FX rates from Open Exchange Rates (`open.er-api.com`) with redundant fallback to `api.exchangerate-api.com` and CDN endpoints.
 - **Global Currency Agnostic**: Supports 14 major currencies (`USD`, `IDR`, `EUR`, `SGD`, `CNY`, `SAR`, `AED`, `PHP`, `MYR`, `JPY`, `GBP`, `AUD`, `THB`, `VND`).
 - **Mode 1-to-1 (Single Target Focus)**:
@@ -37,7 +37,7 @@
 - **Chart.js FX Visualizer**: Historical trend chart with 7-day, 14-day, and 30-day selector and high/low/current statistics.
 - **Central Bank Interest Rates**: Benchmarks for Bank Indonesia (BI), Federal Reserve (Fed), European Central Bank (ECB), Bank of England (BoE), PBOC, Bank of Japan (BOJ), and SOFR.
 
-### 3. 🌐 Multilingual Support (7 World Languages)
+3. Multilingual Support (7 World Languages)
 Seamless instant language switcher in the header:
 - 🇮🇩 **Bahasa Indonesia (ID)**
 - 🇬🇧 **English (EN)**
@@ -47,17 +47,17 @@ Seamless instant language switcher in the header:
 - 🇪🇸 **Spanish / Español (ES)**
 - 🇫🇷 **French / Français (FR)**
 
-### 4. ⚡ Real-Time Telemetry Running Ticker
+4. Real-Time Telemetry Running Ticker
 - Top marquee ticker streaming live port temperatures, weather conditions, central bank rate alerts, and maritime logistics news headlines.
 
-### 5. 👥 Role-Based Access Control (RBAC)
+5. Role-Based Access Control (RBAC)
 - **Administrator**: Complete operational oversight, carrier directories, user management, and system logs.
 - **Logistics Operator**: Route management, event timeline updates, and exception resolution.
 - **Global Buyer / Customer**: Restricted access to view only their own assigned consignments.
 
 ---
 
-## 🛠️ Technology Stack
+Technology Stack
 
 | Layer | Technologies |
 |---|---|
@@ -69,14 +69,14 @@ Seamless instant language switcher in the header:
 
 ---
 
-## 📦 Installation & Setup Guide
+Installation & Setup Guide
 
-### 1. Prerequisites
+1. Prerequisites
 - [Laragon](https://laragon.org/) (or Apache/Nginx + MySQL 8.0 + PHP 8.2+)
 - Composer 2+
 - Git
 
-### 2. Clone & Setup Environment
+2. Clone & Setup Environment
 ```bash
 git clone https://github.com/Wennyfadh/Projectcargo.git
 cd Projectcargo
@@ -85,7 +85,7 @@ cd Projectcargo
 cp .env.example .env
 ```
 
-### 3. Configure Database
+3. Configure Database
 Ensure MySQL is running, then create database `cargotrace`:
 ```sql
 CREATE DATABASE cargotrace CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -101,18 +101,18 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-### 4. Install Dependencies & Generate Key
+4. Install Dependencies & Generate Key
 ```bash
 composer install
 php artisan key:generate
 ```
 
-### 5. Run Migrations & Comprehensive Seeders
+5. Run Migrations & Comprehensive Seeders
 ```bash
 php artisan migrate:fresh --seed
 ```
 
-### 6. Start Development Server
+6. Start Development Server
 ```bash
 php artisan serve --port=8000
 ```
@@ -120,7 +120,7 @@ Visit `http://127.0.0.1:8000` in your web browser.
 
 ---
 
-## 🔑 Demo Login Accounts
+Demo Login Accounts
 
 All pre-seeded demo accounts are configured with the password: `password`
 
@@ -136,7 +136,7 @@ All pre-seeded demo accounts are configured with the password: `password`
 
 ---
 
-## 🧪 Automated Testing
+Automated Testing
 
 CargoTrace includes a comprehensive automated test suite covering authentication, RBAC authorization, ETA calculations, multi-modal map rendering, and live currency conversions:
 
@@ -151,7 +151,7 @@ Pass: 23 passed (187 assertions)
 
 ---
 
-## 📄 License & Attribution
+License & Attribution
 
 Developed for **PT Mayora Indah Tbk Global Logistics Visibility Platform** (UAS Web Programming 2).
 All product references (Kopiko, Danisa, Torabika, Beng-Beng) are registered trademarks of PT Mayora Indah Tbk.
