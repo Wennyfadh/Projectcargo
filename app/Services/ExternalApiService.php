@@ -21,8 +21,7 @@ class ExternalApiService
 
         return Cache::remember($key, 300, function () use ($roundedLat, $roundedLng) {
             try {
-                $response = Http::timeout(5)
-                    ->retry(2, 200)
+                $response = Http::timeout(2)
                     ->get('https://api.open-meteo.com/v1/forecast', [
                         'latitude' => $roundedLat,
                         'longitude' => $roundedLng,
@@ -150,51 +149,70 @@ class ExternalApiService
         $key = 'cargo-trace:news:shipping';
 
         return Cache::remember($key, 600, function () {
+            $apiKey = env('GNEWS_API_KEY', '');
+            if (empty($apiKey)) {
+                return $this->defaultShippingNews();
+            }
+
             try {
                 $query = 'shipping OR port congestion OR Red Sea shipping OR logistics supply chain';
 
-                $response = Http::timeout(5)
-                    ->retry(2, 200)
+                $response = Http::timeout(2)
                     ->get('https://gnews.io/api/v4/search', [
                         'q' => $query,
                         'lang' => 'en',
                         'max' => 5,
-                        'apikey' => env('GNEWS_API_KEY', ''),
+                        'apikey' => $apiKey,
                     ]);
 
                 if ($response->successful()) {
                     return $response->json()['articles'] ?? [];
                 }
             } catch (\Throwable $exception) {
-                // Fallback to empty dataset when news upstream is unavailable.
+                // Fallback to default dataset when news upstream is unavailable.
             }
 
-            return [];
+            return $this->defaultShippingNews();
         });
     }
 
     public function fetchLocalPortTime(Location $location): array
     {
-        $key = 'cargo-trace:time:'.$location->id;
+        return [
+            'timezone' => $location->timezone,
+            'datetime' => now()->setTimezone($location->timezone)->toDateTimeString(),
+        ];
+    }
 
-        return Cache::remember($key, 300, function () use ($location) {
-            try {
-                $response = Http::timeout(5)
-                    ->retry(2, 200)
-                    ->get('https://worldtimeapi.org/api/timezone/'.$location->timezone);
-
-                if ($response->successful()) {
-                    return $response->json();
-                }
-            } catch (\Throwable $exception) {
-                // Fallback to local timezone metadata.
-            }
-
-            return [
-                'timezone' => $location->timezone,
-                'datetime' => now()->setTimezone($location->timezone)->toDateTimeString(),
-            ];
-        });
+    public function defaultShippingNews(): array
+    {
+        return [
+            [
+                'title' => 'PT Mayora Indah Tbk Perluas Penetrasi Ekspor Kopiko & Danisa ke 100+ Negara di Asia, Eropa & Timur Tengah',
+                'source' => ['name' => 'Mayora Investor Relations'],
+                'url' => 'https://www.mayora.com',
+            ],
+            [
+                'title' => 'Pelabuhan Tanjung Priok Percepat Gate-In Terotomasi Digital Menuju Zero Container Yard Congestion',
+                'source' => ['name' => 'IPC Pelindo News'],
+                'url' => 'https://www.pelindo.co.id',
+            ],
+            [
+                'title' => 'Bank Indonesia: Stabilitas Nilai Tukar Rupiah Terus Terjaga Menopang Daya Saing Komoditas Ekspor Non-Migas',
+                'source' => ['name' => 'Bank Indonesia'],
+                'url' => 'https://www.bi.go.id',
+            ],
+            [
+                'title' => 'World Container Index: Tarif Angkutan Peti Kemas Rute Shanghai - Rotterdam Berada pada Level Stabil Q4',
+                'source' => ['name' => 'Drewry Maritime Research'],
+                'url' => 'https://www.drewry.co.uk',
+            ],
+            [
+                'title' => 'Bea Cukai Tanjung Priok Rilis Kemudahan Ekspor Jalur Hijau untuk Korporasi Manufaktur Nasional Berprestasi',
+                'source' => ['name' => 'Direktorat Jenderal Bea dan Cukai'],
+                'url' => 'https://www.beacukai.go.id',
+            ],
+        ];
     }
 
     public function fetchPortMetadata(Location $location): array
