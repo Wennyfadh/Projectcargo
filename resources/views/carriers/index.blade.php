@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Carriers Directory · PT Mayora Indah Tbk')
-@section('page-title', 'Global Ocean Shipping Lines')
+@section('title', __('messages.page_titles.carriers'))
+@section('page-title', __('messages.nav.carriers'))
 
 @section('content')
 <div class="space-y-6 p-5 md:p-8">
@@ -10,18 +10,18 @@
         <div class="relative z-10 flex flex-wrap items-center justify-between gap-4">
             <div>
                 <div class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-cyan-300 backdrop-blur">
-                    <span>⚓ Maritime Logistics Alliances</span>
+                    <span>⚓ {{ __('messages.carriers_page.badge') }}</span>
                     <span>•</span>
-                    <span>Tanjung Priok Container Port</span>
+                    <span>{{ __('messages.carriers_page.port_hub') }}</span>
                 </div>
-                <h2 class="mt-2 text-2xl font-bold tracking-tight text-white md:text-3xl">Partner Ocean Carriers</h2>
+                <h2 class="mt-2 text-2xl font-bold tracking-tight text-white md:text-3xl">{{ __('messages.carriers_page.banner_title') }}</h2>
                 <p class="mt-1 max-w-2xl text-sm text-slate-300">
-                    Official container shipping lines transporting PT Mayora Indah Tbk products across transpacific, Europe, Far East, and Middle East corridors.
+                    {{ __('messages.carriers_page.banner_sub') }}
                 </p>
             </div>
             <div class="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-center backdrop-blur">
                 <span class="block text-2xl font-extrabold text-cyan-400">{{ $carriers->total() }}</span>
-                <span class="text-xs uppercase tracking-wider text-slate-300">Partner Carriers</span>
+                <span class="text-xs uppercase tracking-wider text-slate-300">{{ __('messages.carriers_page.partner_carriers') }}</span>
             </div>
         </div>
         <div class="absolute -right-10 -bottom-10 h-48 w-48 rounded-full bg-cyan-500/20 blur-2xl"></div>
@@ -38,7 +38,7 @@
                         </div>
                         <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold {{ $carrier->is_active ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600' }}">
                             <span class="h-1.5 w-1.5 rounded-full {{ $carrier->is_active ? 'bg-emerald-500' : 'bg-slate-400' }}"></span>
-                            {{ $carrier->is_active ? 'Active Line' : 'Inactive' }}
+                            {{ $carrier->is_active ? __('messages.carriers_page.status_active') : __('messages.carriers_page.status_inactive') }}
                         </span>
                     </div>
 
@@ -61,13 +61,13 @@
                 <div class="mt-5 border-t border-slate-100 pt-3">
                     <div class="flex items-center justify-between">
                         <div>
-                            <span class="text-[11px] text-slate-400">Current Volume</span>
-                            <div class="text-sm font-extrabold text-navy-900">{{ $carrier->shipments_count }} Export Shipments</div>
+                            <span class="text-[11px] text-slate-400">{{ __('messages.carriers_page.partner_carriers') }}</span>
+                            <div class="text-sm font-extrabold text-navy-900">{{ $carrier->shipments_count }} {{ __('messages.shipments_page.stat_active') }}</div>
                         </div>
                         @if($carrier->website_url)
                             <a href="{{ $carrier->website_url }}" target="_blank" rel="noopener noreferrer"
                                class="rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs font-bold text-ocean-700 hover:bg-ocean-50">
-                                Portal ↗
+                                {{ __('messages.carriers_page.tracking_portal') }}
                             </a>
                         @endif
                     </div>
@@ -79,20 +79,20 @@
     <!-- Carrier Detailed Table -->
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-100 bg-slate-50/50 px-6 py-4">
-            <h3 class="text-sm font-bold text-slate-800">All Registered Ocean Shipping Lines</h3>
-            <p class="text-xs text-slate-500">Official SCAC codes, global portal links, and customer support channels.</p>
+            <h3 class="text-sm font-bold text-slate-800">{{ __('messages.carriers_page.banner_title') }}</h3>
+            <p class="text-xs text-slate-500">{{ __('messages.carriers_page.banner_sub') }}</p>
         </div>
 
         <div class="overflow-x-auto">
             <table class="min-w-full text-left text-sm">
                 <thead>
                     <tr class="border-b border-slate-200 bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                        <th class="px-6 py-3.5">SCAC Code</th>
-                        <th class="px-6 py-3.5">Shipping Line Name</th>
-                        <th class="px-6 py-3.5">Contact Operations</th>
-                        <th class="px-6 py-3.5">Global Website</th>
-                        <th class="px-6 py-3.5">Shipments Transported</th>
-                        <th class="px-6 py-3.5 text-right">Status</th>
+                        <th class="px-6 py-3.5">SCAC</th>
+                        <th class="px-6 py-3.5">{{ __('messages.shipments_page.th_carrier') }}</th>
+                        <th class="px-6 py-3.5">{{ __('messages.carriers_page.contact_email') }}</th>
+                        <th class="px-6 py-3.5">{{ __('messages.carriers_page.tracking_portal') }}</th>
+                        <th class="px-6 py-3.5">{{ __('messages.shipments_page.stat_active') }}</th>
+                        <th class="px-6 py-3.5 text-right">{{ __('messages.shipments_page.th_status') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -121,18 +121,18 @@
                             </td>
                             <td class="whitespace-nowrap px-6 py-4">
                                 <span class="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2.5 py-0.5 text-xs font-bold text-cyan-800 border border-cyan-200">
-                                    🚢 {{ $carrier->shipments_count }} Containers
+                                    🚢 {{ $carrier->shipments_count }}
                                 </span>
                             </td>
                             <td class="whitespace-nowrap px-6 py-4 text-right">
                                 <span class="rounded-full px-2.5 py-0.5 text-xs font-bold {{ $carrier->is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600' }}">
-                                    {{ $carrier->is_active ? 'Active' : 'Inactive' }}
+                                    {{ $carrier->is_active ? __('messages.carriers_page.status_active') : __('messages.carriers_page.status_inactive') }}
                                 </span>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-slate-500">No carrier records available.</td>
+                            <td colspan="6" class="px-6 py-12 text-center text-slate-500">{{ __('messages.reports_page.no_data') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Monitoring Kurs Real-Time & Deteksi Perubahan Mata Uang')
-@section('page-title', 'Monitoring Kurs & Risiko Valas Ekspor')
+@section('title', __('messages.page_titles.currency'))
+@section('page-title', __('messages.nav.currency'))
 
 @push('head')
     <!-- Chart.js CDN -->
@@ -27,38 +27,38 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <span id="headerLiveStatusBadge" class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300 ring-1 ring-inset ring-emerald-500/30">
                         <span class="h-2 w-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span id="headerLiveStatusText">Live FX API Stream 100% Real-Time</span>
+                        <span id="headerLiveStatusText">{{ __('messages.currency_page.badge_stream') }}</span>
                     </span>
                     <span class="rounded-full bg-cyan-400/20 px-3 py-1 text-xs font-bold text-cyan-200">
-                        Agnostik Multi-Mata Uang Global
+                        {{ __('messages.currency_page.badge_agnostic') }}
                     </span>
                     <span id="headerProviderName" class="text-xs text-slate-300">
                         {{ $ratesData['provider'] ?? 'Open Exchange Rates (open.er-api.com)' }}
                     </span>
                 </div>
                 <h2 class="mt-3 text-2xl font-black md:text-3xl tracking-tight">
-                    Monitoring Kurs & Deteksi Volatilitas Valas
+                    {{ __('messages.currency_page.banner_title') }}
                 </h2>
                 <p class="mt-1.5 text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    Pantau pergerakan nilai tukar mata uang pasar ekspor PT Mayora Indah Tbk secara <strong class="text-white">100% real-time hidup dari API eksternal</strong> untuk seluruh mata uang (Asia, Eropa, Timur Tengah, Amerika). Dilengkapi algoritma deteksi lonjakan (*change detection*) antar-fetch dan kalkulator muatan kargo 1-to-1 serta 1-to-Many.
+                    {{ __('messages.currency_page.banner_sub') }}
                 </p>
             </div>
 
             <!-- Global Quick Stats in Banner -->
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 <div class="rounded-2xl bg-white/10 p-3.5 backdrop-blur-md border border-white/10 text-center">
-                    <span class="block text-[10px] uppercase font-bold tracking-wider text-cyan-200">Mata Uang Aktif</span>
+                    <span class="block text-[10px] uppercase font-bold tracking-wider text-cyan-200">{{ __('messages.currency_page.active_currencies') }}</span>
                     <strong class="mt-0.5 block text-xl font-black text-white font-mono-num">{{ count($supportedCurrencies) }}</strong>
-                    <span class="text-[10px] text-slate-300">Pasar Ekspor</span>
+                    <span class="text-[10px] text-slate-300">{{ __('messages.currency_page.export_markets') }}</span>
                 </div>
                 <div class="rounded-2xl bg-white/10 p-3.5 backdrop-blur-md border border-white/10 text-center">
-                    <span class="block text-[10px] uppercase font-bold tracking-wider text-cyan-200">Ambang Batas</span>
+                    <span class="block text-[10px] uppercase font-bold tracking-wider text-cyan-200">{{ __('messages.currency_page.threshold_badge') }}</span>
                     <strong id="badgeThreshold" class="mt-0.5 block text-xl font-black text-amber-300 font-mono-num">≥ 0.25%</strong>
-                    <span class="text-[10px] text-slate-300">Trigger Alert</span>
+                    <span class="text-[10px] text-slate-300">{{ __('messages.currency_page.trigger_alert') }}</span>
                 </div>
                 <div class="col-span-2 sm:col-span-1 rounded-2xl bg-white/10 p-3.5 backdrop-blur-md border border-white/10 text-center">
-                    <span class="block text-[10px] uppercase font-bold tracking-wider text-cyan-200">Status Data API</span>
-                    <strong id="syncStatusText" class="mt-0.5 block text-xl font-black text-emerald-300">Real-Time</strong>
+                    <span class="block text-[10px] uppercase font-bold tracking-wider text-cyan-200">{{ __('messages.currency_page.api_status_label') }}</span>
+                    <strong id="syncStatusText" class="mt-0.5 block text-xl font-black text-emerald-300">{{ __('messages.currency_page.real_time') }}</strong>
                     <span id="lastUpdatedHeader" class="text-[10px] text-slate-300 font-mono-num">
                         {{ $ratesData['time_last_update_utc'] ?? $ratesData['synced_at'] ?? now()->format('H:i:s') }}
                     </span>
@@ -73,17 +73,18 @@
             <div class="flex items-center gap-3">
                 <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-amber-500 text-white text-lg">🧪</span>
                 <div>
-                    <h4 class="text-sm font-extrabold text-amber-950">Mode Uji Coba Simulasi Volatilitas Aktif</h4>
+                    <h4 class="text-sm font-extrabold text-amber-950">{{ __('messages.currency_page.sim_active_title') }}</h4>
                     <p class="text-xs text-amber-800">
-                        Perubahan angka di bawah ini merupakan <strong>Simulasi Buatan (Artificial Test)</strong> untuk menguji respons notifikasi banner, bukan angka resmi dari feed API pasar real-time.
+                        {{ __('messages.currency_page.sim_active_sub') }}
                     </p>
                 </div>
             </div>
             <button type="button" onclick="resetSimulation()"
                     class="rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-xs font-bold shadow-xs transition">
-                🔄 Kembalikan ke Kurs Asli API Real-Time
+                {{ __('messages.currency_page.btn_reset_sim') }}
             </button>
         </div>
+    </div>
     </div>
 
     <!-- 2. Dynamic Multi-Currency Change Detection Alert Banner -->
@@ -97,14 +98,14 @@
                     <div>
                         <div class="flex flex-wrap items-center gap-2">
                             <h3 class="text-base font-extrabold text-amber-950">
-                                Peringatan Deteksi Perubahan Nilai Tukar (FX Volatility Alert)
+                                {{ __('messages.currency_page.alert_title') }}
                             </h3>
                             <span id="alertCountBadge" class="rounded-full bg-amber-200 px-2.5 py-0.5 text-xs font-bold text-amber-900 font-mono-num">
                                 0 Mata Uang Terdeteksi
                             </span>
                         </div>
                         <p class="mt-1 text-xs text-amber-900 leading-relaxed max-w-3xl">
-                            Sistem mendeteksi fluktuasi mata uang yang melampaui ambang batas (<strong id="alertThresholdText">0.25%</strong>) terhadap mata uang dasar (<strong id="alertBaseText">{{ $baseCurrency }}</strong>) antar pembaruan data real-time. Tinjau estimasi nilai invoice dan strategi lindung nilai (*hedging*).
+                            {{ __('messages.currency_page.alert_sub') }}
                         </p>
 
                         <!-- Chips of Triggered Currencies -->
@@ -116,7 +117,7 @@
 
                 <div class="flex items-center gap-2">
                     <button type="button" onclick="dismissAlert()" class="rounded-xl bg-white/90 px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm border border-amber-200 hover:bg-white transition">
-                        Tutup Alert
+                        {{ __('messages.currency_page.alert_dismiss') }}
                     </button>
                 </div>
             </div>
@@ -130,7 +131,7 @@
             <div class="flex flex-wrap items-center gap-4">
                 <!-- Base Currency Selector -->
                 <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Mata Uang Dasar (Base Currency)</label>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('messages.currency_page.base_currency') }}</label>
                     <div class="mt-1 relative">
                         <select id="selectBaseCurrency" onchange="changeBaseCurrency(this.value)"
                                 class="rounded-xl border border-slate-200 bg-slate-50 py-2 pl-3 pr-8 text-xs font-bold text-slate-800 shadow-sm outline-none focus:border-ocean-500 focus:ring-2 focus:ring-ocean-500/10 cursor-pointer">
@@ -145,24 +146,24 @@
 
                 <!-- Threshold Selector -->
                 <div>
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Ambang Batas Deteksi (Threshold)</label>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('messages.currency_page.threshold_select') }}</label>
                     <div class="mt-1 relative">
                         <select id="selectThreshold" onchange="changeThreshold(this.value)"
                                 class="rounded-xl border border-slate-200 bg-slate-50 py-2 pl-3 pr-8 text-xs font-bold text-slate-800 shadow-sm outline-none focus:border-ocean-500 focus:ring-2 focus:ring-ocean-500/10 cursor-pointer">
-                            <option value="0.10">0.10% (Sangat Sensitif)</option>
-                            <option value="0.25" selected>0.25% (Rekomendasi Standar)</option>
-                            <option value="0.50">0.50% (Moderat)</option>
-                            <option value="1.00">1.00% (Volatilitas Tinggi)</option>
+                            <option value="0.10">0.10% (0.10%)</option>
+                            <option value="0.25" selected>0.25% (0.25%)</option>
+                            <option value="0.50">0.50% (0.50%)</option>
+                            <option value="1.00">1.00% (1.00%)</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Live Stream Indicator Badge -->
                 <div class="hidden md:block">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Sumber Data</label>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('messages.currency_page.data_source') }}</label>
                     <div class="mt-1 inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-1.5 text-xs font-bold text-emerald-800">
                         <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span id="controlLiveApiBadge">API Real-Time Hidup</span>
+                        <span id="controlLiveApiBadge">{{ __('messages.currency_page.live_api_active') }}</span>
                     </div>
                 </div>
             </div>
@@ -172,7 +173,7 @@
                 <!-- Auto-Refresh Countdown Display -->
                 <div class="hidden sm:flex items-center gap-2 rounded-xl bg-slate-50 border border-slate-200 px-3 py-1.5 text-xs text-slate-600">
                     <span class="h-2 w-2 rounded-full bg-teal-500 animate-pulse"></span>
-                    <span>Auto-refresh: <strong id="refreshCountdownText" class="font-mono-num text-slate-900">60s</strong></span>
+                    <span>{{ __('messages.currency_page.auto_refresh') }}: <strong id="refreshCountdownText" class="font-mono-num text-slate-900">60s</strong></span>
                 </div>
 
                 <!-- Refresh Button -->
@@ -181,23 +182,23 @@
                     <svg id="refreshSpinner" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
-                    <span id="refreshBtnLabel">Refresh Sekarang</span>
+                    <span id="refreshBtnLabel">{{ __('messages.currency_page.btn_refresh') }}</span>
                 </button>
 
                 <!-- Simulation / Test Mode Dropdown/Buttons -->
                 <div class="flex items-center gap-1 bg-amber-50 p-1 rounded-xl border border-amber-200">
-                    <span class="text-[10px] font-bold text-amber-800 uppercase px-2 hidden md:inline">🧪 Uji Coba:</span>
+                    <span class="text-[10px] font-bold text-amber-800 uppercase px-2 hidden md:inline">{{ __('messages.currency_page.sim_label') }}</span>
                     <button type="button" onclick="simulateVolatility('surge')" title="Uji coba simulasi lonjakan kurs (+1.5%)"
                             class="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 text-[11px] font-bold transition shadow-sm">
-                        +1.5% Surge
+                        {{ __('messages.currency_page.btn_surge') }}
                     </button>
                     <button type="button" onclick="simulateVolatility('drop')" title="Uji coba simulasi penurunan kurs (-1.2%)"
                             class="rounded-lg bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1 text-[11px] font-bold transition shadow-sm">
-                        -1.2% Drop
+                        {{ __('messages.currency_page.btn_drop') }}
                     </button>
                     <button type="button" onclick="resetSimulation()" title="Kembalikan ke data kurs asli API"
                             class="rounded-lg bg-white hover:bg-slate-100 text-slate-700 px-2 py-1 text-[11px] font-bold border border-slate-200 transition">
-                        Reset
+                        {{ __('messages.currency_page.btn_reset') }}
                     </button>
                 </div>
             </div>
@@ -210,8 +211,8 @@
         <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-7">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-slate-900">Grafik Tren Fluktuasi Nilai Tukar</h3>
-                    <p class="text-xs text-slate-500">Histori dan tren pergerakan nilai tukar pasar ekspor Mayora.</p>
+                    <h3 class="text-base font-bold text-slate-900">{{ __('messages.currency_page.chart_title') }}</h3>
+                    <p class="text-xs text-slate-500">{{ __('messages.currency_page.chart_sub') }}</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
@@ -244,15 +245,15 @@
 
             <div class="mt-3 grid grid-cols-3 gap-2 border-t border-slate-100 pt-3 text-xs text-center">
                 <div class="rounded-xl bg-slate-50 p-2">
-                    <span class="block text-[10px] text-slate-400 uppercase font-semibold">Kurs Tertinggi</span>
+                    <span class="block text-[10px] text-slate-400 uppercase font-semibold">{{ __('messages.currency_page.chart_max') }}</span>
                     <strong id="chartStatMax" class="font-mono-num text-slate-800 font-bold">—</strong>
                 </div>
                 <div class="rounded-xl bg-slate-50 p-2">
-                    <span class="block text-[10px] text-slate-400 uppercase font-semibold">Kurs Terendah</span>
+                    <span class="block text-[10px] text-slate-400 uppercase font-semibold">{{ __('messages.currency_page.chart_min') }}</span>
                     <strong id="chartStatMin" class="font-mono-num text-slate-800 font-bold">—</strong>
                 </div>
                 <div class="rounded-xl bg-teal-50 p-2 border border-teal-100">
-                    <span class="block text-[10px] text-teal-700 uppercase font-semibold">Kurs Terkini Real-Time</span>
+                    <span class="block text-[10px] text-teal-700 uppercase font-semibold">{{ __('messages.currency_page.chart_current') }}</span>
                     <strong id="chartStatCurrent" class="font-mono-num text-teal-900 font-bold">—</strong>
                 </div>
             </div>
@@ -265,21 +266,21 @@
                 <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5">
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-base font-extrabold text-slate-900">Cek Nilai Tukar & Konversi</h3>
+                            <h3 class="text-base font-extrabold text-slate-900">{{ __('messages.currency_page.checker_title') }}</h3>
                             <span id="activeModeBadge" class="rounded-full bg-teal-100 px-2 py-0.5 text-[10px] font-bold text-teal-800">1-TO-1</span>
                         </div>
-                        <p class="text-xs text-slate-500">Cek kurs satu-per-satu spesifik atau sekaligus banyak negara secara dinamis.</p>
+                        <p class="text-xs text-slate-500">{{ __('messages.currency_page.checker_sub') }}</p>
                     </div>
 
                     <!-- Mode Selector Tab Pills -->
                     <div class="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1 text-xs">
                         <button type="button" onclick="switchCheckerMode('1-to-1')" id="tabMode1to1"
                                 class="checker-tab-btn inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold transition bg-white text-navy-900 shadow-xs">
-                            <span>🎯 1-to-1</span>
+                            <span>{{ __('messages.currency_page.tab_1to1') }}</span>
                         </button>
                         <button type="button" onclick="switchCheckerMode('1-to-many')" id="tabMode1toMany"
                                 class="checker-tab-btn inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-slate-600 hover:text-slate-900 transition">
-                            <span>🌐 1-to-Many</span>
+                            <span>{{ __('messages.currency_page.tab_1toMany') }}</span>
                         </button>
                     </div>
                 </div>
@@ -288,18 +289,18 @@
                 <div class="mt-4 space-y-3.5">
                     <div>
                         <div class="flex items-center justify-between">
-                            <label class="block text-xs font-bold text-slate-700">Nominal Muatan / Nilai Valas</label>
-                            <span class="text-[10px] text-slate-400">Default: 1 unit mata uang</span>
+                            <label class="block text-xs font-bold text-slate-700">{{ __('messages.currency_page.amount_label') }}</label>
+                            <span class="text-[10px] text-slate-400">{{ __('messages.currency_page.default_amount_hint') }}</span>
                         </div>
                         <div class="mt-1 relative rounded-xl shadow-sm">
                             <input type="number" id="calcInputAmount" value="1" step="any" min="0"
-                                   placeholder="Masukkan nominal..."
+                                   placeholder="1"
                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 font-mono-num text-lg font-black text-slate-900 outline-none focus:border-ocean-500 focus:bg-white focus:ring-2 focus:ring-ocean-500/10 transition">
                         </div>
 
                         <!-- Quick Nominal Chips -->
                         <div class="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">Cepat:</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mr-1">{{ __('messages.currency_page.quick_chips_label') }}</span>
                             <button type="button" onclick="setCheckerAmount(1)" class="rounded-lg bg-slate-100 hover:bg-slate-200 px-2 py-0.5 font-mono font-bold text-slate-700 transition">1</button>
                             <button type="button" onclick="setCheckerAmount(100)" class="rounded-lg bg-slate-100 hover:bg-slate-200 px-2 py-0.5 font-mono font-bold text-slate-700 transition">100</button>
                             <button type="button" onclick="setCheckerAmount(1000)" class="rounded-lg bg-slate-100 hover:bg-slate-200 px-2 py-0.5 font-mono font-bold text-slate-700 transition">1.000</button>
@@ -311,7 +312,7 @@
 
                     <!-- Shared: Mata Uang Asal (Source Currency) -->
                     <div>
-                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Mata Uang Asal (Source / Acuan)</label>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('messages.currency_page.source_currency') }}</label>
                         <select id="calcFromCurrency" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800 outline-none focus:border-ocean-500 cursor-pointer">
                             @foreach($supportedCurrencies as $code => $meta)
                                 <option value="{{ $code }}" {{ $code === 'USD' ? 'selected' : '' }}>
@@ -328,7 +329,7 @@
                         <!-- Target Currency & Swap Button -->
                         <div class="flex items-center gap-2">
                             <div class="flex-1">
-                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Ke Mata Uang Tujuan (Target)</label>
+                                <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('messages.currency_page.target_currency') }}</label>
                                 <select id="calcToCurrency" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800 outline-none focus:border-ocean-500 cursor-pointer">
                                     @foreach($supportedCurrencies as $code => $meta)
                                         <option value="{{ $code }}" {{ $code === 'IDR' ? 'selected' : '' }}>
@@ -339,7 +340,7 @@
                             </div>
                             <!-- Swap Button -->
                             <div class="pt-4">
-                                <button type="button" onclick="swapCheckerCurrencies()" title="Tukar posisi mata uang asal & tujuan (Swap)"
+                                <button type="button" onclick="swapCheckerCurrencies()" title="{{ __('messages.currency_page.swap_btn') }}"
                                         class="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 bg-slate-50 hover:bg-ocean-50 hover:border-ocean-300 hover:text-ocean-700 text-slate-700 shadow-xs transition active:scale-90">
                                     <svg id="swapIconSvg" class="h-4 w-4 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
@@ -353,29 +354,29 @@
                             <div class="flex items-center justify-between text-xs text-teal-800 font-semibold border-b border-teal-200/50 pb-2">
                                 <span class="flex items-center gap-1.5">
                                     <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                    <span>Hasil Konversi 1-to-1 (Live API):</span>
+                                    <span>{{ __('messages.currency_page.result_1to1') }}</span>
                                 </span>
                                 <span id="calcRateRatio" class="font-mono-num text-[11px] font-bold text-teal-700">
-                                    <span class="inline-block animate-pulse text-slate-400">Mengambil kurs live...</span>
+                                    <span class="inline-block animate-pulse text-slate-400">...</span>
                                 </span>
                             </div>
                             
                             <div id="calcConvertedResult" class="mt-2 text-2xl font-black text-teal-950 font-mono-num tracking-tight">
-                                <span class="inline-block animate-pulse text-slate-400 text-lg">Menghitung...</span>
+                                <span class="inline-block animate-pulse text-slate-400 text-lg">...</span>
                             </div>
 
                             <!-- Inverse Rate Display (Nilai Balik) -->
                             <div class="mt-2 flex items-center justify-between text-[11px] text-teal-700/80 pt-1.5 border-t border-teal-200/40">
-                                <span>Nilai Balik (Inverse Rate):</span>
+                                <span>{{ __('messages.currency_page.inverse_rate') }}</span>
                                 <span id="calcInverseRatio" class="font-mono-num font-semibold">
-                                    <span class="inline-block animate-pulse text-slate-400">Menghitung...</span>
+                                    <span class="inline-block animate-pulse text-slate-400">{{ __('messages.currency_page.btn_refreshing') }}</span>
                                 </span>
                             </div>
                         </div>
 
                         <!-- Preset Cargo Mayora Matrix -->
                         <div>
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Preset Muatan Logistik Mayora:</span>
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">{{ __('messages.currency_page.presets_title') }}</span>
                             <div class="grid grid-cols-2 gap-2 text-[11px]">
                                 <button type="button" onclick="setPresetCargo(32000, 'USD', 'IDR')"
                                         class="rounded-xl border border-slate-200 bg-slate-50 hover:bg-cyan-50 hover:border-cyan-200 p-2 text-left transition">
@@ -408,31 +409,31 @@
                         <!-- Region Quick Presets & Target Filter -->
                         <div>
                             <div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                                <span>Pilih Pasar Tujuan Ekspor:</span>
-                                <span id="multiCountLabel" class="text-ocean-700 font-bold">13 Mata Uang Aktif</span>
+                                <span>{{ __('messages.currency_page.multi_market_prompt') }}</span>
+                                <span id="multiCountLabel" class="text-ocean-700 font-bold">13 {{ __('messages.currency_page.active_currencies') }}</span>
                             </div>
                             
                             <!-- Filter Preset Chips -->
                             <div class="flex flex-wrap items-center gap-1 text-[11px]">
                                 <button type="button" onclick="filterMultiRegion('ALL')" id="btnFilterRegion-ALL"
                                         class="region-filter-btn rounded-lg bg-navy-900 text-cyan-300 px-2 py-0.5 font-bold transition shadow-2xs">
-                                    ✅ Semua
+                                    {{ __('messages.currency_page.region_all') }}
                                 </button>
                                 <button type="button" onclick="filterMultiRegion('ASEAN')" id="btnFilterRegion-ASEAN"
                                         class="region-filter-btn rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 font-semibold transition">
-                                    🌏 ASEAN
+                                    {{ __('messages.currency_page.region_asean') }}
                                 </button>
                                 <button type="button" onclick="filterMultiRegion('EUROPE')" id="btnFilterRegion-EUROPE"
                                         class="region-filter-btn rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 font-semibold transition">
-                                    🇪🇺 Eropa
+                                    {{ __('messages.currency_page.region_europe') }}
                                 </button>
                                 <button type="button" onclick="filterMultiRegion('MIDEAST')" id="btnFilterRegion-MIDEAST"
                                         class="region-filter-btn rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 font-semibold transition">
-                                    🕌 Timteng
+                                    {{ __('messages.currency_page.region_mideast') }}
                                 </button>
                                 <button type="button" onclick="filterMultiRegion('EASTASIA')" id="btnFilterRegion-EASTASIA"
                                         class="region-filter-btn rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 px-2 py-0.5 font-semibold transition">
-                                    🇨🇳 Asia Timur
+                                    {{ __('messages.currency_page.region_eastasia') }}
                                 </button>
                             </div>
 
@@ -445,8 +446,8 @@
                         <!-- 1-to-Many Output Grid Cards Container -->
                         <div class="rounded-2xl border border-slate-200 bg-slate-50/50 p-2.5">
                             <div class="flex items-center justify-between text-xs text-slate-500 font-semibold px-1 pb-2 border-b border-slate-200/60">
-                                <span>Hasil Konversi Real-Time ke Pasar Global:</span>
-                                <span class="font-mono-num text-[11px] text-slate-400" id="multiBaseReferenceLabel">Acuan: 1 USD</span>
+                                <span>{{ __('messages.currency_page.multi_grid_title') }}</span>
+                                <span class="font-mono-num text-[11px] text-slate-400" id="multiBaseReferenceLabel">{{ __('messages.currency_page.multi_grid_ref') }} 1 USD</span>
                             </div>
 
                             <!-- Multi Currency Grid -->
@@ -464,15 +465,15 @@
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 bg-slate-50/70 px-6 py-4">
             <div>
-                <h3 class="font-bold text-slate-900">Watchlist & Tabel Kurs Multi-Mata Uang Terintegrasi</h3>
+                <h3 class="font-bold text-slate-900">{{ __('messages.currency_page.table_title') }}</h3>
                 <p class="text-xs text-slate-500">
-                    Nilai tukar seluruh mata uang negara tujuan ekspor terhadap mata uang dasar (<strong id="tableBaseLabel">{{ $baseCurrency }}</strong>) bersumber 100% dari respons API live.
+                    {{ __('messages.currency_page.table_sub') }}
                 </p>
             </div>
 
             <!-- Table Search Input -->
             <div class="flex items-center gap-2">
-                <input type="text" id="tableSearchInput" onkeyup="filterCurrencyTable()" placeholder="Cari mata uang, negara..."
+                <input type="text" id="tableSearchInput" onkeyup="filterCurrencyTable()" placeholder="{{ __('messages.currency_page.search_currency_placeholder') }}"
                        class="w-48 sm:w-60 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs outline-none focus:border-ocean-500 focus:ring-2 focus:ring-ocean-500/10">
             </div>
         </div>
@@ -481,14 +482,14 @@
             <table class="min-w-full text-left text-xs" id="currencyTable">
                 <thead class="bg-slate-50 font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100">
                     <tr>
-                        <th class="px-6 py-3.5">Mata Uang & Negara</th>
-                        <th class="px-6 py-3.5">Wilayah Pasar</th>
-                        <th class="px-6 py-3.5 text-right">Kurs Real-Time API</th>
-                        <th class="px-6 py-3.5 text-right">Snapshot Sesi Sebelumnya</th>
-                        <th class="px-6 py-3.5 text-right">Selisih (Delta Riil)</th>
-                        <th class="px-6 py-3.5 text-center">Perubahan (%)</th>
-                        <th class="px-6 py-3.5 text-center">Status Ambang Batas</th>
-                        <th class="px-6 py-3.5 text-right">Aksi</th>
+                        <th class="px-6 py-3.5">{{ __('messages.currency_page.th_currency_country') }}</th>
+                        <th class="px-6 py-3.5">{{ __('messages.currency_page.th_market_region') }}</th>
+                        <th class="px-6 py-3.5 text-right">{{ __('messages.currency_page.th_live_rate') }}</th>
+                        <th class="px-6 py-3.5 text-right">{{ __('messages.currency_page.th_previous_session') }}</th>
+                        <th class="px-6 py-3.5 text-right">{{ __('messages.currency_page.th_delta') }}</th>
+                        <th class="px-6 py-3.5 text-center">{{ __('messages.currency_page.th_pct_change') }}</th>
+                        <th class="px-6 py-3.5 text-center">{{ __('messages.currency_page.th_threshold_status') }}</th>
+                        <th class="px-6 py-3.5 text-right">{{ __('messages.currency_page.th_action') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100" id="currencyTableBody">
@@ -516,18 +517,18 @@
     <!-- 6. Central Bank Interest Rates Table -->
     <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="border-b border-slate-100 bg-slate-50/70 px-6 py-4">
-            <h3 class="font-bold text-slate-900">Suku Bunga Acuan Bank Sentral Pasar Ekspor Utama</h3>
-            <p class="text-xs text-slate-500">Benchmark suku bunga acuan moneter untuk negosiasi kontrak ekspor, fasilitas Letter of Credit (LC), dan pembiayaan freight maritim.</p>
+            <h3 class="font-bold text-slate-900">{{ __('messages.currency_page.policy_rates_title') }}</h3>
+            <p class="text-xs text-slate-500">{{ __('messages.currency_page.policy_rates_sub') }}</p>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full text-left text-xs">
                 <thead class="bg-slate-50 font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100">
                     <tr>
-                        <th class="px-6 py-3">Bank Sentral / Lembaga</th>
-                        <th class="px-6 py-3">Instrumen Acuan</th>
-                        <th class="px-6 py-3">Tingkat Bunga</th>
-                        <th class="px-6 py-3">Arah Kebijakan</th>
-                        <th class="px-6 py-3">Dampak Terhadap Biaya Ekspor Mayora</th>
+                        <th class="px-6 py-3">{{ __('messages.currency_page.th_central_bank') }}</th>
+                        <th class="px-6 py-3">{{ __('messages.currency_page.th_instrument') }}</th>
+                        <th class="px-6 py-3">{{ __('messages.currency_page.th_interest_rate') }}</th>
+                        <th class="px-6 py-3">{{ __('messages.currency_page.th_policy_stance') }}</th>
+                        <th class="px-6 py-3">{{ __('messages.currency_page.th_export_impact') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -557,6 +558,20 @@
 
 @push('scripts')
 <script>
+    const i18n = {
+        syncing: @json(__('messages.currency_page.btn_refreshing')),
+        synced: @json(__('messages.currency_page.btn_refreshed')),
+        refreshNow: @json(__('messages.currency_page.btn_refresh')),
+        statusStable: @json(__('messages.currency_page.status_stable')),
+        statusVolatility: @json(__('messages.currency_page.status_volatility')),
+        convertBtn: @json(__('messages.currency_page.btn_convert_row')),
+        focus: @json(__('messages.currency_page.focus_btn')),
+        ref: @json(__('messages.currency_page.multi_grid_ref')),
+        activeCurrencies: @json(__('messages.currency_page.active_currencies')),
+        resultConversion: @json(__('messages.currency_page.result_1to1')),
+        countPairsTriggered: @json(__('messages.currency_page.count_pairs_triggered')),
+    };
+
     // Initial State Passed from Server
     let currentBase = "{{ $baseCurrency }}";
     let activeThreshold = 0.25; // 0.25% default
@@ -595,7 +610,7 @@
         const btnLabel = document.getElementById('refreshBtnLabel');
 
         if (spinner) spinner.classList.add('animate-spin');
-        if (btnLabel) btnLabel.textContent = 'Memperbarui...';
+        if (btnLabel) btnLabel.textContent = i18n.syncing;
 
         try {
             // First attempt: Direct fetch to open.er-api.com (100% real-time, CORS enabled)
@@ -663,9 +678,9 @@
                 // Update UI metadata
                 updateMetadataUI(fetched);
 
-                if (btnLabel) btnLabel.textContent = 'Tersinkron!';
+                if (btnLabel) btnLabel.textContent = i18n.synced;
                 setTimeout(() => {
-                    if (btnLabel) btnLabel.textContent = 'Refresh Sekarang';
+                    if (btnLabel) btnLabel.textContent = i18n.refreshNow;
                 }, 1500);
             } else {
                 throw new Error('Semua provider gagal mengembalikan kurs');
@@ -725,11 +740,17 @@
         const provider = data.provider || 'Open Exchange Rates (open.er-api.com)';
         const updatedTime = data.time_last_update_utc || data.synced_at || new Date().toLocaleTimeString('id-ID');
 
-        document.getElementById('headerProviderName').textContent = provider;
-        document.getElementById('footerProviderLabel').textContent = provider;
-        document.getElementById('lastUpdatedHeader').textContent = updatedTime;
-        document.getElementById('syncStatusText').textContent = 'Real-Time';
-        document.getElementById('syncStatusText').className = 'mt-0.5 block text-xl font-black text-emerald-300';
+        const headerProv = document.getElementById('headerProviderName');
+        if (headerProv) headerProv.textContent = provider;
+        const footerProv = document.getElementById('footerProviderLabel');
+        if (footerProv) footerProv.textContent = provider;
+        const lastUpdated = document.getElementById('lastUpdatedHeader');
+        if (lastUpdated) lastUpdated.textContent = updatedTime;
+        const syncStatus = document.getElementById('syncStatusText');
+        if (syncStatus) {
+            syncStatus.textContent = 'Real-Time';
+            syncStatus.className = 'mt-0.5 block text-xl font-black text-emerald-300';
+        }
     }
 
     // 4. Render Full Currency Table with Live Rates & Deltas
@@ -791,15 +812,15 @@
                     <td class="px-6 py-4 text-center">
                         ${isBeyondThreshold ?
                             `<span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold text-amber-900 animate-pulse">
-                                ⚠️ Volatilitas Terdeteksi
+                                ${i18n.statusVolatility}
                              </span>` :
-                            `<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">Stabil</span>`
+                            `<span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">${i18n.statusStable}</span>`
                         }
                     </td>
                     <td class="px-6 py-4 text-right">
                         <button type="button" onclick="setCalculatorPair('${currentBase}', '${code}', ${rate})"
                                 class="rounded-lg bg-cyan-50 hover:bg-cyan-100 text-cyan-800 font-bold px-2.5 py-1 text-[11px] transition">
-                            Konversi ➔
+                            ${i18n.convertBtn}
                         </button>
                     </td>
                 </tr>
@@ -849,7 +870,7 @@
         });
 
         if (triggered.length > 0) {
-            countBadge.textContent = `${triggered.length} Pasangan Melampaui Batas (≥ ${activeThreshold.toFixed(2)}%)`;
+            countBadge.textContent = i18n.countPairsTriggered.replace(':count', triggered.length).replace(':threshold', activeThreshold.toFixed(2));
             let chipsHtml = '';
 
             triggered.forEach(item => {
@@ -1150,7 +1171,7 @@
 
         const refLabel = document.getElementById('multiBaseReferenceLabel');
         if (refLabel) {
-            refLabel.textContent = `Acuan: ${amount >= 100 ? new Intl.NumberFormat('id-ID').format(amount) : amount} ${from}`;
+            refLabel.textContent = `${i18n.ref} ${amount >= 100 ? new Intl.NumberFormat('id-ID').format(amount) : amount} ${from}`;
         }
 
         const grid = document.getElementById('multiCurrencyGrid');
@@ -1182,7 +1203,7 @@
                     </div>
 
                     <div class="mt-2 flex items-baseline justify-between">
-                        <span class="text-[10px] text-slate-400 font-medium">Hasil Konversi:</span>
+                        <span class="text-[10px] text-slate-400 font-medium">${i18n.resultConversion}</span>
                         <strong class="font-mono-num text-sm font-black text-slate-900">${formatWithCurrencySymbol(converted, code)}</strong>
                     </div>
 
@@ -1190,7 +1211,7 @@
                         <span class="font-mono-num text-[10px] text-slate-500">1 ${from} = ${formatCurrencyValue(unitRate, code)}</span>
                         <button type="button" onclick="focusOneToOnePair('${code}')"
                                 class="inline-flex items-center gap-0.5 text-ocean-600 hover:text-ocean-800 font-bold hover:underline">
-                            <span>Fokus</span>
+                            <span>${i18n.focus}</span>
                             <span aria-hidden="true">➔</span>
                         </button>
                     </div>
@@ -1210,7 +1231,7 @@
 
         const countLabel = document.getElementById('multiCountLabel');
         if (countLabel) {
-            countLabel.textContent = `${targetCount} Mata Uang Aktif`;
+            countLabel.textContent = `${targetCount} ${i18n.activeCurrencies}`;
         }
     }
 
@@ -1396,8 +1417,9 @@
 
     // Helper Formatter Functions
     function formatCurrencyValue(val, curr) {
-        if (curr === 'IDR' || curr === 'VND') {
-            return 'Rp ' + new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(val);
+        const symbol = (supportedCurrenciesMeta[curr]?.symbol || curr) + ' ';
+        if (curr === 'IDR' || curr === 'VND' || curr === 'JPY') {
+            return symbol + new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(val);
         }
         if (val >= 100) {
             return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
@@ -1406,8 +1428,9 @@
     }
 
     function formatDelta(delta, curr) {
-        if (curr === 'IDR' || curr === 'VND') {
-            return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(delta);
+        const symbol = (supportedCurrenciesMeta[curr]?.symbol || '') + ' ';
+        if (curr === 'IDR' || curr === 'VND' || curr === 'JPY') {
+            return symbol + new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(delta);
         }
         return new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 }).format(delta);
     }

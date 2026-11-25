@@ -1,12 +1,30 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
-@section('page-title', 'Dashboard')
+@section('title', __('messages.page_titles.dashboard'))
+@section('page-title', __('messages.nav.dashboard'))
 
 @push('head')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <script src="{{ asset('vendor/globe/globe.gl.min.js') }}"></script>
+    <script>
+        if (typeof Globe === 'undefined') {
+            document.write('<script src="https://unpkg.com/globe.gl@2.46.2/dist/globe.gl.min.js"><\/script>');
+        }
+    </script>
     <style>
+        .scene-container canvas {
+            outline: none;
+        }
+        .globe-vehicle-marker {
+            pointer-events: auto;
+            user-select: none;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .globe-origin-marker {
+            pointer-events: auto;
+            user-select: none;
+        }
         @keyframes vesselRadarPulse {
             0% { transform: scale(0.6); opacity: 0.9; }
             70% { transform: scale(2.2); opacity: 0.15; }
@@ -116,19 +134,19 @@
 <div class="space-y-5 p-5 md:p-8">
     <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
-            <h2 class="text-2xl font-bold text-slate-900">Shipment overview</h2>
-            <p class="mt-1 text-sm text-slate-500">A live view of your global supply chain operations.</p>
+            <h2 class="text-2xl font-bold text-slate-900">{{ __('messages.dashboard.overview_title') }}</h2>
+            <p class="mt-1 text-sm text-slate-500">{{ __('messages.dashboard.overview_subtitle') }}</p>
         </div>
-        <a href="{{ route('shipments.index') }}" class="rounded-lg bg-ocean-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ocean-700">View shipments <span aria-hidden="true">→</span></a>
+        <a href="{{ route('shipments.index') }}" class="rounded-lg bg-ocean-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-ocean-700">{{ __('messages.dashboard.view_shipments') }}</a>
     </div>
 
     <section class="grid grid-cols-2 gap-3 xl:grid-cols-5">
         @foreach([
-            ['Total Shipments', $dashboard['total_shipments'], '◇', 'bg-cyan-100 text-cyan-700'],
-            ['In Transit', $dashboard['in_transit'], '⇢', 'bg-sky-100 text-sky-700'],
-            ['Delivered', $dashboard['delivered'], '✓', 'bg-emerald-100 text-emerald-700'],
-            ['Delayed', $dashboard['delayed'], '◷', 'bg-amber-100 text-amber-700'],
-            ['Open Exceptions', $dashboard['open_exceptions'], '△', 'bg-rose-100 text-rose-700']
+            [__('messages.dashboard.stats.total_shipments'), $dashboard['total_shipments'], '◇', 'bg-cyan-100 text-cyan-700'],
+            [__('messages.dashboard.stats.in_transit'), $dashboard['in_transit'], '⇢', 'bg-sky-100 text-sky-700'],
+            [__('messages.dashboard.stats.delivered'), $dashboard['delivered'], '✓', 'bg-emerald-100 text-emerald-700'],
+            [__('messages.dashboard.stats.delayed'), $dashboard['delayed'], '◷', 'bg-amber-100 text-amber-700'],
+            [__('messages.dashboard.stats.open_exceptions'), $dashboard['open_exceptions'], '△', 'bg-rose-100 text-rose-700']
         ] as [$label, $value, $icon, $color])
             <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
                 <div class="flex items-center justify-between gap-2">
@@ -143,36 +161,36 @@
     <section class="grid gap-5 xl:grid-cols-12">
         <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-5">
             <div class="mb-4">
-                <h3 class="font-bold text-slate-900">Shipments by status</h3>
-                <p class="text-xs text-slate-500">Current distribution of shipments</p>
+                <h3 class="font-bold text-slate-900">{{ __('messages.dashboard.charts.shipments_by_status') }}</h3>
+                <p class="text-xs text-slate-500">{{ __('messages.dashboard.charts.shipments_by_status_sub') }}</p>
             </div>
             <div class="h-64"><canvas id="statusChart"></canvas></div>
         </article>
         <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-4">
             <div class="mb-4">
-                <h3 class="font-bold text-slate-900">Carrier distribution</h3>
-                <p class="text-xs text-slate-500">Shipment volume by carrier</p>
+                <h3 class="font-bold text-slate-900">{{ __('messages.dashboard.charts.carrier_distribution') }}</h3>
+                <p class="text-xs text-slate-500">{{ __('messages.dashboard.charts.carrier_distribution_sub') }}</p>
             </div>
             <div class="h-64"><canvas id="carrierChart"></canvas></div>
         </article>
         <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-3">
             <div class="mb-4">
-                <h3 class="font-bold text-slate-900">Delivery performance</h3>
-                <p class="text-xs text-slate-500">Operational KPIs</p>
+                <h3 class="font-bold text-slate-900">{{ __('messages.dashboard.performance.title') }}</h3>
+                <p class="text-xs text-slate-500">{{ __('messages.dashboard.performance.sub') }}</p>
             </div>
             <div class="space-y-6 pt-2">
                 <div>
-                    <div class="mb-2 flex justify-between text-sm"><span class="text-slate-600">On-time rate</span><strong>{{ $dashboard['on_time_rate'] }}%</strong></div>
+                    <div class="mb-2 flex justify-between text-sm"><span class="text-slate-600">{{ __('messages.dashboard.performance.on_time_rate') }}</span><strong>{{ $dashboard['on_time_rate'] }}%</strong></div>
                     <div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full bg-emerald-500" style="width: {{ min($dashboard['on_time_rate'], 100) }}%"></div></div>
                 </div>
                 <div>
-                    <div class="mb-2 flex justify-between text-sm"><span class="text-slate-600">Exception rate</span><strong>{{ $dashboard['exception_rate'] }}%</strong></div>
+                    <div class="mb-2 flex justify-between text-sm"><span class="text-slate-600">{{ __('messages.dashboard.performance.exception_rate') }}</span><strong>{{ $dashboard['exception_rate'] }}%</strong></div>
                     <div class="h-2 rounded-full bg-slate-100"><div class="h-2 rounded-full bg-rose-500" style="width: {{ min($dashboard['exception_rate'], 100) }}%"></div></div>
                 </div>
                 <div class="rounded-lg bg-slate-50 p-3">
-                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Open issues requiring attention</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">{{ __('messages.dashboard.performance.open_issues') }}</p>
                     <p class="mt-1 text-2xl font-bold text-rose-600">{{ $dashboard['open_exceptions'] }}</p>
-                    <a href="{{ route('exceptions.index') }}" class="mt-2 inline-block text-xs font-semibold text-ocean-700 hover:underline">Review exceptions →</a>
+                    <a href="{{ route('exceptions.index') }}" class="mt-2 inline-block text-xs font-semibold text-ocean-700 hover:underline">{{ __('messages.dashboard.performance.review_exceptions') }}</a>
                 </div>
             </div>
         </article>
@@ -182,27 +200,42 @@
         <article class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-8">
             <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                    <h3 class="font-bold text-slate-900">Shipment Map (Live Multi-Modal Tracking)</h3>
-                    <p class="text-xs text-slate-500">Lintasan satelit real-time: Kapal Laut 🚢, Pesawat Udara ✈️, dan Truk Darat 🚛</p>
+                    <h3 class="font-bold text-slate-900">{{ __('messages.dashboard.map.title') }}</h3>
+                    <p class="text-xs text-slate-500">{{ __('messages.dashboard.map.sub') }}</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2">
+                    <!-- 2D vs 3D Globe Toggle Switcher -->
+                    <div class="inline-flex items-center rounded-xl border border-slate-200 bg-slate-100 p-1 text-xs shadow-inner">
+                        <button type="button" id="btnDashMap2D" onclick="switchDashboardView('2D')"
+                                title="{{ __('messages.dashboard.map.view_2d_title') }}"
+                                class="map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-bold bg-white text-navy-950 shadow-xs transition">
+                            <span>{{ __('messages.dashboard.map.view_2d') }}</span>
+                        </button>
+                        <button type="button" id="btnDashMap3D" onclick="switchDashboardView('3D')"
+                                title="{{ __('messages.dashboard.map.view_3d_title') }}"
+                                class="map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-semibold text-slate-600 hover:text-slate-900 transition">
+                            <span>{{ __('messages.dashboard.map.view_3d') }}</span>
+                            <span class="rounded bg-teal-500/20 px-1.5 py-0.5 text-[9px] font-black text-teal-700 uppercase">3D</span>
+                        </button>
+                    </div>
+
                     <!-- Filter Moda Bar -->
                     <div class="flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-50 p-1 text-xs">
                         <button type="button" onclick="filterDashboardModa('ALL')" id="dashModa-ALL"
                                 class="dash-moda-btn rounded-lg px-2.5 py-1 font-bold bg-white text-navy-900 shadow-xs">
-                            Semua Moda
+                            {{ __('messages.dashboard.map.filter_all') }}
                         </button>
                         <button type="button" onclick="filterDashboardModa('SEA')" id="dashModa-SEA"
                                 class="dash-moda-btn rounded-lg px-2.5 py-1 font-medium text-slate-600 hover:text-slate-900">
-                            🚢 Laut
+                            {{ __('messages.dashboard.map.filter_sea') }}
                         </button>
                         <button type="button" onclick="filterDashboardModa('AIR')" id="dashModa-AIR"
                             class="dash-moda-btn rounded-lg px-2.5 py-1 font-medium text-slate-600 hover:text-slate-900">
-                            ✈️ Udara
+                            {{ __('messages.dashboard.map.filter_air') }}
                         </button>
                         <button type="button" onclick="filterDashboardModa('ROAD')" id="dashModa-ROAD"
                             class="dash-moda-btn rounded-lg px-2.5 py-1 font-medium text-slate-600 hover:text-slate-900">
-                            🚛 Darat
+                            {{ __('messages.dashboard.map.filter_road') }}
                         </button>
                     </div>
 
@@ -213,8 +246,84 @@
                 </div>
             </div>
             <div class="relative">
-                <div id="shipmentMap" class="h-96 overflow-hidden rounded-xl border border-slate-200"></div>
-                <button id="btnRecenterDash" type="button" title="Pusatkan Peta (Fit All Shipments)"
+                <!-- 2D Leaflet Flat Map -->
+                <div id="shipmentMap" class="h-96 md:h-[440px] overflow-hidden rounded-xl border border-slate-200"></div>
+
+                <!-- 3D Globe Container (Globe.gl) -->
+                <div id="globe3dContainer" class="hidden h-96 md:h-[440px] w-full overflow-hidden rounded-xl border border-slate-800 bg-[#040d1a] relative">
+                    <!-- Globe Controls in Top-Right -->
+                    <div class="absolute top-3 right-3 z-20 flex items-center gap-2">
+                        <button type="button" id="btnGlobeAutoRotate" onclick="toggleGlobeAutoRotate()"
+                                title="{{ __('messages.dashboard.map.auto_rotate') }}"
+                                class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-cyan-300 shadow-lg backdrop-blur-md transition hover:bg-navy-900">
+                            <span id="globeAutoRotateIcon" class="inline-block transition-transform duration-500">🔄</span>
+                            <span id="globeAutoRotateText">{{ __('messages.dashboard.map.auto_rotate') }}</span>
+                        </button>
+                        <button type="button" onclick="resetGlobeView()"
+                                title="{{ __('messages.dashboard.map.reset_view') }}"
+                                class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-slate-200 shadow-lg backdrop-blur-md transition hover:bg-navy-900 hover:text-white">
+                            <span>🎯</span>
+                            <span>{{ __('messages.dashboard.map.reset_view') }}</span>
+                        </button>
+                    </div>
+
+                    <!-- Globe Legend in Bottom-Left -->
+                    <div class="pointer-events-none absolute bottom-3 left-3 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-navy-950/80 px-3 py-1.5 text-xs text-slate-300 shadow-xl backdrop-blur-md">
+                        <span class="flex items-center gap-1 font-bold text-teal-300">
+                            <span class="h-2 w-2 rounded-full bg-teal-400 animate-ping"></span>
+                            <span>Mayora Hub (ID)</span>
+                        </span>
+                        <span class="text-white/20">|</span>
+                        <span class="flex items-center gap-1.5 text-[11px]">
+                            <span class="inline-flex items-center gap-0.5"><span class="h-2 w-2.5 rounded-xs bg-[#00a884]"></span> 🚢</span>
+                            <span class="inline-flex items-center gap-0.5"><span class="h-2 w-2.5 rounded-xs bg-[#0284c7]"></span> ✈️</span>
+                            <span class="inline-flex items-center gap-0.5"><span class="h-2 w-2.5 rounded-xs bg-[#059669]"></span> 🚛</span>
+                        </span>
+                        <span class="text-white/20 hidden md:inline">|</span>
+                        <span class="text-[11px] text-slate-400 hidden md:inline">{{ __('messages.dashboard.map.globe_hint') }}</span>
+                    </div>
+
+                    <!-- Floating Interactive Shipment Card on 3D Globe -->
+                    <div id="globeShipmentCard" class="hidden absolute top-4 left-4 z-30 max-w-xs sm:max-w-sm rounded-2xl border border-cyan-400/30 bg-navy-950/95 p-4 text-white shadow-2xl backdrop-blur-md transition-all">
+                        <div class="flex items-start justify-between gap-3 border-b border-white/10 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span id="globeCardModeIcon" class="text-lg">🚢</span>
+                                <div>
+                                    <span id="globeCardCarrier" class="rounded bg-white/10 px-2 py-0.5 text-[10px] font-bold text-cyan-300 font-mono">CARRIER</span>
+                                    <h4 id="globeCardShipmentNo" class="text-sm font-black text-white">CT-SHIPMENT</h4>
+                                </div>
+                            </div>
+                            <button type="button" onclick="closeGlobeShipmentCard()" class="rounded-lg p-1 text-slate-400 hover:bg-white/10 hover:text-white">✕</button>
+                        </div>
+                        <div class="mt-2.5 space-y-1.5 text-xs text-slate-300">
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">{{ __('messages.dashboard.map.origin') }}:</span>
+                                <span id="globeCardOrigin" class="font-bold text-white">Jakarta (ID)</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">{{ __('messages.dashboard.map.destination') }}:</span>
+                                <span id="globeCardDestination" class="font-bold text-cyan-300">Rotterdam (NL)</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">{{ __('messages.dashboard.map.status') }}:</span>
+                                <span id="globeCardStatus" class="rounded-full px-2 py-0.5 text-[10px] font-bold bg-cyan-500/20 text-cyan-300">IN_TRANSIT</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-slate-400">{{ __('messages.dashboard.map.carrier') }}:</span>
+                                <span id="globeCardVehicle" class="font-medium text-slate-200">MV Kopiko Express</span>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-white/10 flex justify-end">
+                            <a id="globeCardTrackLink" href="#" class="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-3 py-1.5 text-xs font-bold text-navy-950 shadow-md hover:from-teal-400 hover:to-cyan-400 transition">
+                                <span>{{ __('messages.shipments_page.btn_track') }}</span>
+                                <span>➔</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Re-center button for 2D Leaflet -->
+                <button id="btnRecenterDash" type="button" title="{{ __('messages.dashboard.map.recenter') }}"
                         class="absolute bottom-4 right-4 z-[900] flex h-10 w-10 items-center justify-center rounded-full bg-white text-slate-700 shadow-xl ring-1 ring-slate-200 transition hover:bg-slate-50 hover:scale-105 active:scale-95">
                     <svg class="h-5 w-5 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                         <circle cx="12" cy="12" r="7" stroke="currentColor"/>
@@ -229,26 +338,26 @@
         </article>
         <article class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm xl:col-span-4">
             <div class="mb-4">
-                <h3 class="font-bold text-slate-900">Operations context</h3>
-                <p class="text-xs text-slate-500">External data for planning awareness</p>
+                <h3 class="font-bold text-slate-900">{{ __('messages.dashboard.operations_context.title') }}</h3>
+                <p class="text-xs text-slate-500">{{ __('messages.dashboard.operations_context.sub') }}</p>
             </div>
             <div class="border-b border-slate-100 pb-4">
                 <div class="flex items-center justify-between">
-                    <p class="text-sm font-semibold">Port weather</p>
-                    <span class="text-xs text-slate-400">Weather context</span>
+                    <p class="text-sm font-semibold">{{ __('messages.dashboard.operations_context.port_weather') }}</p>
+                    <span class="text-xs text-slate-400">{{ __('messages.dashboard.operations_context.weather_context') }}</span>
                 </div>
                 @if(!empty($weather['current']))
                     <div class="mt-3 grid grid-cols-2 gap-3 text-sm">
-                        <div class="rounded-lg bg-slate-50 p-3"><span class="block text-xs text-slate-500">Temperature</span><strong>{{ $weather['current']['temperature_2m'] ?? 'N/A' }} °C</strong></div>
-                        <div class="rounded-lg bg-slate-50 p-3"><span class="block text-xs text-slate-500">Wind speed</span><strong>{{ $weather['current']['wind_speed_10m'] ?? 'N/A' }} km/h</strong></div>
+                        <div class="rounded-lg bg-slate-50 p-3"><span class="block text-xs text-slate-500">{{ __('messages.dashboard.operations_context.temperature') }}</span><strong>{{ $weather['current']['temperature_2m'] ?? 'N/A' }} °C</strong></div>
+                        <div class="rounded-lg bg-slate-50 p-3"><span class="block text-xs text-slate-500">{{ __('messages.dashboard.operations_context.wind_speed') }}</span><strong>{{ $weather['current']['wind_speed_10m'] ?? 'N/A' }} km/h</strong></div>
                     </div>
                 @else
-                    <p class="mt-3 text-sm text-slate-500">Weather information is unavailable right now.</p>
+                    <p class="mt-3 text-sm text-slate-500">{{ __('messages.dashboard.operations_context.weather_unavailable') }}</p>
                 @endif
-                <p class="mt-2 text-xs text-slate-400">Weather is planning context, not proof of shipment delay.</p>
+                <p class="mt-2 text-xs text-slate-400">{{ __('messages.dashboard.operations_context.weather_disclaimer') }}</p>
             </div>
             <div class="pt-4">
-                <p class="text-sm font-semibold">Shipping news</p>
+                <p class="text-sm font-semibold">{{ __('messages.dashboard.operations_context.shipping_news') }}</p>
                 <div class="mt-2 space-y-3">
                     @forelse(($news ?? []) as $item)
                         <a href="{{ $item['url'] ?? '#' }}" target="_blank" rel="noopener noreferrer" class="block rounded-lg bg-slate-50 p-3 hover:bg-cyan-50">
@@ -256,7 +365,7 @@
                             <span class="mt-1 block text-xs text-slate-500">{{ $item['source']['name'] ?? 'Industry source' }}</span>
                         </a>
                     @empty
-                        <p class="text-sm text-slate-500">No shipping news is available right now.</p>
+                        <p class="text-sm text-slate-500">{{ __('messages.dashboard.operations_context.news_empty') }}</p>
                     @endforelse
                 </div>
             </div>
@@ -266,17 +375,22 @@
     <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
             <div>
-                <h3 class="font-bold text-slate-900">Recent shipments</h3>
-                <p class="text-xs text-slate-500">Latest updated shipments</p>
+                <h3 class="font-bold text-slate-900">{{ __('messages.dashboard.recent_shipments.title') }}</h3>
+                <p class="text-xs text-slate-500">{{ __('messages.dashboard.recent_shipments.sub') }}</p>
             </div>
-            <a href="{{ route('shipments.index') }}" class="text-sm font-semibold text-ocean-700 hover:underline">All shipments →</a>
+            <a href="{{ route('shipments.index') }}" class="text-sm font-semibold text-ocean-700 hover:underline">{{ __('messages.dashboard.view_shipments') }}</a>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full text-left text-sm">
                 <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                     <tr>
-                        <th class="px-5 py-3">Shipment No.</th><th class="px-5 py-3">Customer</th><th class="px-5 py-3">Carrier</th>
-                        <th class="px-5 py-3">Origin</th><th class="px-5 py-3">Destination</th><th class="px-5 py-3">ETA</th><th class="px-5 py-3">Status</th>
+                        <th class="px-5 py-3">{{ __('messages.dashboard.recent_shipments.th_shipment') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.dashboard.recent_shipments.th_customer') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.dashboard.recent_shipments.th_carrier') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.dashboard.recent_shipments.th_origin') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.dashboard.recent_shipments.th_destination') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.dashboard.recent_shipments.th_eta') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.dashboard.recent_shipments.th_status') }}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
@@ -288,10 +402,10 @@
                             <td class="whitespace-nowrap px-5 py-3">{{ $shipment->origin?->city ?? $shipment->origin?->name ?? '—' }}</td>
                             <td class="whitespace-nowrap px-5 py-3">{{ $shipment->destination?->city ?? $shipment->destination?->name ?? '—' }}</td>
                             <td class="whitespace-nowrap px-5 py-3">{{ $shipment->estimated_arrival_at?->format('M d, Y') ?? '—' }}</td>
-                            <td class="whitespace-nowrap px-5 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $shipment->status === 'DELIVERED' ? 'bg-emerald-100 text-emerald-700' : ($shipment->delay_status !== 'ON_TIME' ? 'bg-rose-100 text-rose-700' : 'bg-cyan-100 text-cyan-800') }}">{{ str_replace('_', ' ', $shipment->status) }}</span></td>
+                            <td class="whitespace-nowrap px-5 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $shipment->status === 'DELIVERED' ? 'bg-emerald-100 text-emerald-700' : ($shipment->delay_status !== 'ON_TIME' ? 'bg-rose-100 text-rose-700' : 'bg-cyan-100 text-cyan-800') }}">{{ __('messages.statuses.' . $shipment->status) ?? str_replace('_', ' ', $shipment->status) }}</span></td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="px-5 py-10 text-center text-slate-500">No shipments found for this account.</td></tr>
+                        <tr><td colspan="7" class="px-5 py-10 text-center text-slate-500">{{ __('messages.dashboard.recent_shipments.no_data') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -306,12 +420,14 @@
         const statusData = @json($statusBreakdown);
         const carrierData = @json($carrierBreakdown);
         const routePoints = @json($routePoints);
+        const statusTranslations = @json(__('messages.statuses'));
+        const transportCallouts = @json(__('messages.transport_modes.callouts'));
         const palette = ['#1483a1', '#28a879', '#e99538', '#d84c5c', '#8795a7', '#7856a8'];
 
         new Chart(document.getElementById('statusChart'), {
             type: 'bar',
             data: {
-                labels: statusData.map(item => item.label.replaceAll('_', ' ')),
+                labels: statusData.map(item => statusTranslations[item.label] || item.label.replaceAll('_', ' ')),
                 datasets: [{ data: statusData.map(item => item.value), backgroundColor: palette, borderRadius: 6, maxBarThickness: 48 }]
             },
             options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } } }
@@ -440,7 +556,7 @@
 
             const pointLayers = [];
             const routeAccentColor = mode === 'AIR' ? '#0284c7' : (mode === 'ROAD' ? '#059669' : '#00a884');
-            const calloutPrefix = point.callout_prefix || (mode === 'AIR' ? 'Dalam penerbangan ke' : (mode === 'ROAD' ? 'Dalam perjalanan darat ke' : 'Dalam perjalanan ke'));
+            const calloutPrefix = transportCallouts[mode] || point.callout_prefix || 'En route to';
 
             if (hasOrigin && hasCurr) {
                 // Traversed segment: subtle grey
@@ -479,7 +595,7 @@
                         <div class="callout-dest" style="color: ${routeAccentColor}">${safeText(point.destination_label)}</div>
                         <div class="mt-1 flex items-center justify-between gap-3 text-[11px] text-slate-500 border-t border-slate-100 pt-1">
                             <span class="font-bold text-slate-700">${safeText(point.shipment_number)}</span>
-                            <span class="font-semibold" style="color: ${routeAccentColor}">Live Tracking →</span>
+                            <span class="font-semibold" style="color: ${routeAccentColor}">{{ __('messages.shipments_page.btn_track') }}</span>
                         </div>
                         <div class="callout-arrow"></div>
                     </div>
@@ -527,6 +643,8 @@
 
         // Interactive Moda Filter Handler
         window.filterDashboardModa = function(selectedMode) {
+            currentFilterMode = selectedMode;
+
             // Update button styles
             ['ALL', 'SEA', 'AIR', 'ROAD'].forEach(m => {
                 const btn = document.getElementById(`dashModa-${m}`);
@@ -538,7 +656,7 @@
                 }
             });
 
-            // Filter layers on map
+            // Filter layers on 2D map
             const visibleBounds = [];
             allShipmentItems.forEach(item => {
                 const isVisible = (selectedMode === 'ALL' || item.mode === selectedMode);
@@ -555,8 +673,13 @@
                 }
             });
 
-            if (visibleBounds.length > 0) {
+            if (visibleBounds.length > 0 && currentViewMode === '2D') {
                 map.flyToBounds(visibleBounds, { padding: [40, 40], maxZoom: 6, duration: 1.0 });
+            }
+
+            // Sync with 3D Globe
+            if (globeInstance) {
+                updateGlobeData(selectedMode);
             }
         };
 
@@ -565,5 +688,299 @@
                 map.flyToBounds(bounds, { padding: [35, 35], maxZoom: 5, duration: 1.2 });
             }
         });
+
+        // 3D Globe Implementation (Globe.gl)
+        let currentViewMode = '2D';
+        let currentFilterMode = 'ALL';
+        let globeInstance = null;
+        let isGlobeAutoRotating = true;
+
+        const globeContainer = document.getElementById('globe3dContainer');
+        const map2DContainer = document.getElementById('shipmentMap');
+        const recenter2DBtn = document.getElementById('btnRecenterDash');
+
+        window.switchDashboardView = function(view) {
+            currentViewMode = view;
+            const btn2D = document.getElementById('btnDashMap2D');
+            const btn3D = document.getElementById('btnDashMap3D');
+
+            if (view === '3D') {
+                btn3D.className = 'map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-bold bg-navy-950 text-cyan-300 shadow-xs transition';
+                btn2D.className = 'map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-semibold text-slate-600 hover:text-slate-900 transition';
+                map2DContainer.classList.add('hidden');
+                if (recenter2DBtn) recenter2DBtn.classList.add('hidden');
+                globeContainer.classList.remove('hidden');
+
+                if (!globeInstance) {
+                    initGlobe3D();
+                } else {
+                    globeInstance.resumeAnimation();
+                    resizeGlobe();
+                    updateGlobeData(currentFilterMode);
+                }
+            } else {
+                btn2D.className = 'map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-bold bg-white text-navy-950 shadow-xs transition';
+                btn3D.className = 'map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-semibold text-slate-600 hover:text-slate-900 transition';
+                globeContainer.classList.add('hidden');
+                map2DContainer.classList.remove('hidden');
+                if (recenter2DBtn) recenter2DBtn.classList.remove('hidden');
+
+                if (globeInstance) {
+                    globeInstance.pauseAnimation();
+                }
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+            }
+        };
+
+        function resizeGlobe() {
+            if (!globeInstance || !globeContainer) return;
+            const width = globeContainer.clientWidth || 800;
+            const height = globeContainer.clientHeight || 440;
+            globeInstance.width(width).height(height);
+        }
+
+        function initGlobe3D() {
+            if (typeof Globe === 'undefined') {
+                console.error('Globe.gl library is not loaded');
+                return;
+            }
+
+            const width = globeContainer.clientWidth || 800;
+            const height = globeContainer.clientHeight || 440;
+
+            const blueMarbleUrl = "{{ asset('vendor/globe/earth-blue-marble.jpg') }}";
+            const nightSkyUrl = "{{ asset('vendor/globe/night-sky.png') }}";
+            const bumpUrl = "{{ asset('vendor/globe/earth-night.jpg') }}";
+
+            globeInstance = Globe()(globeContainer)
+                .globeImageUrl(blueMarbleUrl)
+                .backgroundImageUrl(nightSkyUrl)
+                .bumpImageUrl(bumpUrl)
+                .showAtmosphere(true)
+                .atmosphereColor('#38bdf8')
+                .atmosphereAltitude(0.22)
+                .width(width)
+                .height(height);
+
+            // Centered on Indonesia / Southeast Asia global trade hub
+            globeInstance.pointOfView({ lat: -2, lng: 118, altitude: 2.2 }, 0);
+
+            // Controls config
+            globeInstance.controls().autoRotate = true;
+            globeInstance.controls().autoRotateSpeed = 0.65;
+            globeInstance.controls().enableDamping = true;
+            globeInstance.controls().dampingFactor = 0.08;
+
+            globeContainer.addEventListener('pointerdown', () => {
+                if (isGlobeAutoRotating && globeInstance) {
+                    globeInstance.controls().autoRotate = false;
+                }
+            });
+
+            globeContainer.addEventListener('pointerup', () => {
+                if (isGlobeAutoRotating && globeInstance) {
+                    setTimeout(() => {
+                        if (isGlobeAutoRotating && globeInstance) {
+                            globeInstance.controls().autoRotate = true;
+                        }
+                    }, 2500);
+                }
+            });
+
+            updateGlobeData(currentFilterMode);
+
+            window.addEventListener('resize', resizeGlobe);
+        }
+
+        window.toggleGlobeAutoRotate = function() {
+            if (!globeInstance) return;
+            isGlobeAutoRotating = !isGlobeAutoRotating;
+            globeInstance.controls().autoRotate = isGlobeAutoRotating;
+
+            const icon = document.getElementById('globeAutoRotateIcon');
+            const btn = document.getElementById('btnGlobeAutoRotate');
+            if (isGlobeAutoRotating) {
+                if (icon) icon.className = 'inline-block transition-transform duration-500 animate-spin';
+                if (btn) btn.className = 'flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-cyan-300 shadow-lg backdrop-blur-md transition hover:bg-navy-900';
+            } else {
+                if (icon) icon.className = 'inline-block transition-transform duration-500';
+                if (btn) btn.className = 'flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/50 px-3 py-1.5 text-xs font-bold text-slate-400 shadow-lg backdrop-blur-md transition hover:bg-navy-900 hover:text-white';
+            }
+        };
+
+        window.resetGlobeView = function() {
+            if (!globeInstance) return;
+            globeInstance.pointOfView({ lat: -2, lng: 118, altitude: 2.2 }, 1200);
+        };
+
+        window.closeGlobeShipmentCard = function() {
+            const card = document.getElementById('globeShipmentCard');
+            if (card) card.classList.add('hidden');
+        };
+
+        window.showGlobeShipmentCard = function(point) {
+            if (!point) return;
+            const card = document.getElementById('globeShipmentCard');
+            if (!card) return;
+
+            document.getElementById('globeCardModeIcon').textContent = point.transport_mode_icon || '🚢';
+            document.getElementById('globeCardCarrier').textContent = point.carrier || 'CARRIER';
+            document.getElementById('globeCardShipmentNo').textContent = point.shipment_number;
+            document.getElementById('globeCardOrigin').textContent = point.origin_city || point.origin || 'Tangerang / Tanjung Priok (ID)';
+            document.getElementById('globeCardDestination').textContent = point.destination_label || point.destination_city || 'Destination';
+            
+            const statusBadge = document.getElementById('globeCardStatus');
+            statusBadge.textContent = statusTranslations[point.status] || point.status;
+            statusBadge.className = `rounded-full px-2 py-0.5 text-[10px] font-bold ${point.status === 'DELIVERED' ? 'bg-emerald-500/20 text-emerald-300' : (point.delay_status !== 'ON_TIME' ? 'bg-rose-500/20 text-rose-300' : 'bg-cyan-500/20 text-cyan-300')}`;
+
+            document.getElementById('globeCardVehicle').textContent = point.vehicle_name || point.vessel_name || 'Fleet Vehicle';
+            document.getElementById('globeCardTrackLink').href = point.tracking_url;
+
+            card.classList.remove('hidden');
+        };
+
+        function updateGlobeData(mode) {
+            if (!globeInstance) return;
+
+            const filtered = routePoints.filter(p => mode === 'ALL' || p.transport_mode === mode);
+
+            // 1. Great-Circle 3D Curved Arcs
+            const arcs = [];
+            filtered.forEach(p => {
+                const startLat = Number(p.origin_latitude || -6.1018);
+                const startLng = Number(p.origin_longitude || 106.8837);
+                const endLat = Number(p.destination_latitude);
+                const endLng = Number(p.destination_longitude);
+
+                if (Number.isFinite(startLat) && Number.isFinite(startLng) && Number.isFinite(endLat) && Number.isFinite(endLng)) {
+                    const color = p.transport_mode === 'AIR'
+                        ? ['#38bdf8', '#0284c7']
+                        : (p.transport_mode === 'ROAD' ? ['#34d399', '#059669'] : ['#2dd4bf', '#00a884']);
+
+                    arcs.push({
+                        startLat,
+                        startLng,
+                        endLat,
+                        endLng,
+                        color,
+                        altitude: p.transport_mode === 'AIR' ? 0.35 : (p.transport_mode === 'ROAD' ? 0.12 : 0.24),
+                        stroke: p.transport_mode === 'AIR' ? 2.2 : 1.8,
+                        point: p
+                    });
+                }
+            });
+
+            globeInstance
+                .arcsData(arcs)
+                .arcColor('color')
+                .arcAltitude('altitude')
+                .arcStroke('stroke')
+                .arcDashLength(0.38)
+                .arcDashGap(0.22)
+                .arcDashAnimateTime(2200)
+                .arcLabel(d => `
+                    <div style="background: rgba(7, 26, 45, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); padding: 10px 14px; border-radius: 12px; color: #fff; font-family: 'DM Sans', sans-serif; box-shadow: 0 10px 25px rgba(0,0,0,0.5); min-width: 220px; text-align: left;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 6px;">
+                            <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; color: #38bdf8;">${safeText(d.point.transport_mode)} · ${safeText(d.point.carrier)}</span>
+                            <span style="font-size: 14px;">${d.point.transport_mode_icon || '🚢'}</span>
+                        </div>
+                        <div style="font-size: 14px; font-weight: 800; color: #fff; font-family: monospace;">${safeText(d.point.shipment_number)}</div>
+                        <div style="font-size: 12px; color: #cbd5e1; margin-top: 4px;">📍 ${safeText(d.point.origin_city || 'Jakarta')} ➔ <strong style="color: #67e8f9;">${safeText(d.point.destination_label)}</strong></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 11px;">
+                            <span style="color: #94a3b8;">${safeText(d.point.vehicle_name)}</span>
+                            <span style="color: #34d399; font-weight: 700;">${statusTranslations[d.point.status] || d.point.status}</span>
+                        </div>
+                    </div>
+                `)
+                .onArcClick(d => {
+                    showGlobeShipmentCard(d.point);
+                    globeInstance.pointOfView({ lat: d.endLat, lng: d.endLng, altitude: 1.6 }, 1000);
+                });
+
+            // 2. Sonar Rings on Hubs (Jakarta Origin & Global Destination Ports)
+            const rings = [
+                { lat: -6.1018, lng: 106.8837, maxR: 4.8, propSpeed: 2.2, repeatPeriod: 1200, color: '#10b981' }
+            ];
+            filtered.forEach(p => {
+                if (Number.isFinite(Number(p.destination_latitude)) && Number.isFinite(Number(p.destination_longitude))) {
+                    rings.push({
+                        lat: Number(p.destination_latitude),
+                        lng: Number(p.destination_longitude),
+                        maxR: 3.2,
+                        propSpeed: 1.6,
+                        repeatPeriod: 1600,
+                        color: p.transport_mode === 'AIR' ? '#38bdf8' : (p.transport_mode === 'ROAD' ? '#34d399' : '#00a884')
+                    });
+                }
+            });
+
+            globeInstance
+                .ringsData(rings)
+                .ringColor(d => d.color)
+                .ringMaxRadius(d => d.maxR)
+                .ringPropagationSpeed(d => d.propSpeed)
+                .ringRepeatPeriod(d => d.repeatPeriod);
+
+            // 3. HTML Moving Vehicle Markers & Origin Pin
+            const markers = [
+                {
+                    lat: -6.1018,
+                    lng: 106.8837,
+                    type: 'hub',
+                    title: 'PT Mayora Indah Tbk Global Trade Hub'
+                }
+            ];
+
+            filtered.forEach(p => {
+                if (Number.isFinite(Number(p.latitude)) && Number.isFinite(Number(p.longitude))) {
+                    markers.push({
+                        lat: Number(p.latitude),
+                        lng: Number(p.longitude),
+                        type: 'vehicle',
+                        mode: p.transport_mode,
+                        icon: p.transport_mode_icon || '🚢',
+                        title: p.shipment_number,
+                        point: p
+                    });
+                }
+            });
+
+            globeInstance
+                .htmlElementsData(markers)
+                .htmlElement(d => {
+                    const el = document.createElement('div');
+                    if (d.type === 'hub') {
+                        el.innerHTML = `
+                            <div style="cursor: pointer; text-align: center; transform: translate(-50%, -100%);">
+                                <div style="display: inline-flex; align-items: center; gap: 4px; background: rgba(6, 78, 59, 0.95); border: 1.5px solid #10b981; padding: 2px 7px; border-radius: 20px; color: #6ee7b7; font-size: 10px; font-weight: 800; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); backdrop-filter: blur(4px);">
+                                    <span>🏭</span>
+                                    <span>MAYORA HUB</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        const bg = d.mode === 'AIR' ? 'rgba(2, 132, 199, 0.92)' : (d.mode === 'ROAD' ? 'rgba(5, 150, 105, 0.92)' : 'rgba(0, 168, 132, 0.92)');
+                        const border = d.mode === 'AIR' ? '#7dd3fc' : (d.mode === 'ROAD' ? '#6ee7b7' : '#5eead4');
+                        el.innerHTML = `
+                            <div style="cursor: pointer; text-align: center; transform: translate(-50%, -100%); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);"
+                                 onmouseover="this.style.transform='translate(-50%, -115%) scale(1.15)'"
+                                 onmouseout="this.style.transform='translate(-50%, -100%) scale(1)'">
+                                <div style="display: inline-flex; align-items: center; gap: 4px; background: ${bg}; border: 1.5px solid ${border}; padding: 3px 8px; border-radius: 20px; color: #fff; font-size: 11px; font-weight: 800; box-shadow: 0 6px 18px rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+                                    <span style="font-size: 13px;">${d.icon}</span>
+                                    <span style="font-family: monospace; font-size: 10px; letter-spacing: 0.5px;">${safeText(d.title)}</span>
+                                </div>
+                            </div>
+                        `;
+                        el.onclick = (e) => {
+                            e.stopPropagation();
+                            showGlobeShipmentCard(d.point);
+                            globeInstance.pointOfView({ lat: d.lat, lng: d.lng, altitude: 1.5 }, 900);
+                        };
+                    }
+                    return el;
+                });
+        }
     </script>
 @endpush

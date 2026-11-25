@@ -23,10 +23,27 @@ class SetLocale
 
     public function handle(Request $request, Closure $next): Response
     {
+        // Check query parameter (?lang=xx or ?locale=xx) first
+        $requestedLocale = $request->query('locale') ?? $request->query('lang');
+        if ($requestedLocale) {
+            $normalized = strtolower(trim((string) $requestedLocale));
+            if ($normalized === 'cn') {
+                $normalized = 'zh';
+            }
+            if (in_array($normalized, self::SUPPORTED_LOCALES, true)) {
+                session(['locale' => $normalized]);
+            }
+        }
+
         $locale = session('locale', config('app.locale', 'id'));
+        if ($locale === 'cn') {
+            $locale = 'zh';
+        }
 
         if (in_array($locale, self::SUPPORTED_LOCALES, true)) {
             App::setLocale($locale);
+        } else {
+            App::setLocale(config('app.locale', 'id'));
         }
 
         return $next($request);

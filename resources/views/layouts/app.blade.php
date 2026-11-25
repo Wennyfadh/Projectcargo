@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'CargoTrace') · PT Mayora Indah Tbk Global Logistics</title>
+    <title>@yield('title', __('messages.app_title')) · {{ __('messages.app_subtitle') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -82,7 +82,7 @@
             </nav>
             <div class="hidden border-t border-white/10 p-4 lg:block">
                 <div class="mb-1 truncate text-sm font-semibold text-white">{{ auth()->user()->name }}</div>
-                <div class="mb-3 text-xs capitalize text-slate-400">{{ str_replace('_', ' ', auth()->user()->role) }}</div>
+                <div class="mb-3 text-xs capitalize text-slate-400">{{ __('messages.roles.' . auth()->user()->role) ?? str_replace('_', ' ', auth()->user()->role) }}</div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button class="w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-slate-300 transition hover:bg-white/10 hover:text-white">↪ &nbsp; {{ __('messages.nav.logout') }}</button>
@@ -101,8 +101,8 @@
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span>
                         </span>
-                        <span class="font-bold text-[11px] uppercase tracking-wider text-white hidden sm:inline">LIVE FEED</span>
-                        <span class="text-[10px] font-mono text-cyan-400 font-bold bg-navy-900 border border-navy-700 px-1.5 py-0.5 rounded">MAYORA OPS</span>
+                        <span class="font-bold text-[11px] uppercase tracking-wider text-white hidden sm:inline">{{ __('messages.topbar.live_feed') }}</span>
+                        <span class="text-[10px] font-mono text-cyan-400 font-bold bg-navy-900 border border-navy-700 px-1.5 py-0.5 rounded">{{ __('messages.topbar.mayora_ops') }}</span>
                     </div>
 
                     <!-- Marquee Ticker Track (Infinite Smooth Loop) -->
@@ -254,7 +254,7 @@
                                 class="inline-flex items-center gap-1.5 rounded-lg bg-cyan-900/60 hover:bg-cyan-800 text-cyan-200 border border-cyan-700/60 px-2.5 py-1 text-[11px] font-semibold transition shadow-sm hover:scale-102">
                             <span>📊</span>
                             <span class="hidden md:inline">{{ __('messages.ticker.detail_modal') }}</span>
-                            <span class="md:hidden">Pasar</span>
+                            <span class="md:hidden">{{ __('messages.ticker.detail_modal') }}</span>
                         </button>
                     </div>
                 </div>
@@ -302,8 +302,8 @@
                         <!-- Dropdown Menu -->
                         <div id="langDropdownMenu" class="hidden absolute right-0 mt-2 w-56 rounded-2xl border border-slate-200 bg-white py-2 shadow-2xl z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                             <div class="px-3.5 py-2 border-b border-slate-100">
-                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Bahasa Resmi di Dunia</p>
-                                <p class="text-xs font-semibold text-slate-800">UN Official Global Languages</p>
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('messages.nav.languages') }}</p>
+                                <p class="text-xs font-semibold text-slate-800">{{ __('messages.nav.un_official') }}</p>
                             </div>
                             <div class="py-1">
                                 @foreach($locales as $code => $lang)
@@ -332,7 +332,7 @@
                     <span class="hidden text-xs font-bold text-slate-700 md:inline">{{ auth()->user()->name }}</span>
                     <form method="POST" action="{{ route('logout') }}" class="lg:hidden">
                         @csrf
-                        <button class="text-xs font-semibold text-ocean-700 hover:underline">Log out</button>
+                        <button class="text-xs font-semibold text-ocean-700 hover:underline">{{ __('messages.nav.logout') }}</button>
                     </form>
                 </div>
             </header>
@@ -359,10 +359,10 @@
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-base font-extrabold text-navy-950">Pusat Data Pasar & Valuta Asing Global</h3>
+                            <h3 class="text-base font-extrabold text-navy-950">{{ __('messages.modal.title') }}</h3>
                             <span class="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">LIVE SYNC</span>
                         </div>
-                        <p class="text-xs text-slate-500">Kurs mata uang ekspor, suku bunga acuan bank sentral, dan cuaca maritim.</p>
+                        <p class="text-xs text-slate-500">{{ __('messages.currency_page.policy_rates_sub') }}</p>
                     </div>
                 </div>
                 <button type="button" onclick="closeMarketModal()" class="rounded-full p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition">
@@ -376,19 +376,19 @@
             <div class="flex overflow-x-auto border-b border-slate-200 bg-white px-6">
                 <button type="button" onclick="switchModalTab('tab-fx')" id="btn-tab-fx"
                         class="tab-btn active px-4 py-3 text-xs font-bold border-b-2 border-ocean-600 text-ocean-700">
-                    💱 Kurs Valuta Asing (FX)
+                    💱 {{ __('messages.modal.tab_fx') }}
                 </button>
                 <button type="button" onclick="switchModalTab('tab-interest')" id="btn-tab-interest"
                         class="tab-btn px-4 py-3 text-xs font-semibold text-slate-500 border-b-2 border-transparent hover:text-slate-800">
-                    📈 Suku Bunga Bank Sentral
+                    📈 {{ __('messages.modal.tab_interest') }}
                 </button>
                 <button type="button" onclick="switchModalTab('tab-weather')" id="btn-tab-weather"
                         class="tab-btn px-4 py-3 text-xs font-semibold text-slate-500 border-b-2 border-transparent hover:text-slate-800">
-                    🌡️ Suhu & Cuaca Pelabuhan
+                    🌡️ {{ __('messages.modal.tab_weather') }}
                 </button>
                 <button type="button" onclick="switchModalTab('tab-news')" id="btn-tab-news"
                         class="tab-btn px-4 py-3 text-xs font-semibold text-slate-500 border-b-2 border-transparent hover:text-slate-800">
-                    📰 Berita Maritim & Logistik
+                    📰 {{ __('messages.modal.tab_news') }}
                 </button>
             </div>
 
@@ -398,42 +398,42 @@
                 <div id="pane-tab-fx" class="tab-pane space-y-6">
                     <!-- Interactive Converter -->
                     <div class="rounded-2xl border border-teal-100 bg-gradient-to-br from-teal-50/70 to-cyan-50/50 p-5">
-                        <h4 class="font-bold text-slate-900 text-sm">Kalkulator Valuta Asing Ekspor Mayora</h4>
-                        <p class="text-xs text-slate-500 mt-0.5">Konversi nominal ekspor antar mata uang pasar utama secara langsung.</p>
+                        <h4 class="font-bold text-slate-900 text-sm">{{ __('messages.currency_page.checker_title') }}</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">{{ __('messages.currency_page.checker_sub') }}</p>
                         <div class="mt-4 grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
                             <div class="sm:col-span-5">
-                                <label class="block text-[11px] font-bold uppercase text-slate-500">Nominal Mata Uang</label>
+                                <label class="block text-[11px] font-bold uppercase text-slate-500">{{ __('messages.currency_page.amount_label') }}</label>
                                 <input type="number" id="calcAmount" value="10000" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-bold font-mono outline-none focus:border-teal-500">
                             </div>
                             <div class="sm:col-span-3">
-                                <label class="block text-[11px] font-bold uppercase text-slate-500">Dari</label>
+                                <label class="block text-[11px] font-bold uppercase text-slate-500">{{ __('messages.currency_page.source_currency') }}</label>
                                 <select id="calcFrom" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-teal-500">
-                                    <option value="USD">USD ($ - Dollar AS)</option>
-                                    <option value="IDR">IDR (Rp - Rupiah)</option>
-                                    <option value="EUR">EUR (€ - Euro)</option>
-                                    <option value="CNY">CNY (¥ - Yuan China)</option>
-                                    <option value="SAR">SAR (﷼ - Riyal Saudi)</option>
-                                    <option value="AED">AED (د.إ - Dirham UAE)</option>
-                                    <option value="PHP">PHP (₱ - Peso Filipina)</option>
-                                    <option value="GBP">GBP (£ - Pound Inggris)</option>
+                                    <option value="USD">USD ($)</option>
+                                    <option value="IDR">IDR (Rp)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="CNY">CNY (¥)</option>
+                                    <option value="SAR">SAR (﷼)</option>
+                                    <option value="AED">AED (د.إ)</option>
+                                    <option value="PHP">PHP (₱)</option>
+                                    <option value="GBP">GBP (£)</option>
                                 </select>
                             </div>
                             <div class="sm:col-span-1 text-center py-2 text-slate-400 font-bold">➔</div>
                             <div class="sm:col-span-3">
-                                <label class="block text-[11px] font-bold uppercase text-slate-500">Ke</label>
+                                <label class="block text-[11px] font-bold uppercase text-slate-500">{{ __('messages.currency_page.target_currency') }}</label>
                                 <select id="calcTo" class="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:border-teal-500">
-                                    <option value="IDR">IDR (Rp - Rupiah)</option>
-                                    <option value="USD">USD ($ - Dollar AS)</option>
-                                    <option value="EUR">EUR (€ - Euro)</option>
-                                    <option value="CNY">CNY (¥ - Yuan China)</option>
-                                    <option value="SAR">SAR (﷼ - Riyal Saudi)</option>
-                                    <option value="AED">AED (د.إ - Dirham UAE)</option>
-                                    <option value="PHP">PHP (₱ - Peso Filipina)</option>
+                                    <option value="IDR">IDR (Rp)</option>
+                                    <option value="USD">USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="CNY">CNY (¥)</option>
+                                    <option value="SAR">SAR (﷼)</option>
+                                    <option value="AED">AED (د.إ)</option>
+                                    <option value="PHP">PHP (₱)</option>
                                 </select>
                             </div>
                         </div>
                         <div class="mt-4 rounded-xl bg-white p-3.5 border border-slate-200/80 flex items-center justify-between">
-                            <span class="text-xs text-slate-500">Hasil Estimasi Nilai Tukar:</span>
+                            <span class="text-xs text-slate-500">{{ __('messages.currency_page.result_1to1') }}</span>
                             <span id="calcResult" class="text-lg font-black text-teal-700 font-mono">Rp 158.450.000</span>
                         </div>
                     </div>
@@ -443,10 +443,10 @@
                         <table class="min-w-full text-left text-xs">
                             <thead class="bg-slate-50 font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">
                                 <tr>
-                                    <th class="px-4 py-3">Pasangan Mata Uang</th>
-                                    <th class="px-4 py-3">Kurs Terakhir</th>
-                                    <th class="px-4 py-3">Perubahan (24h)</th>
-                                    <th class="px-4 py-3">Negara Tujuan Ekspor</th>
+                                    <th class="px-4 py-3">{{ __('messages.currency_page.th_currency_country') }}</th>
+                                    <th class="px-4 py-3">{{ __('messages.currency_page.th_live_rate') }}</th>
+                                    <th class="px-4 py-3">{{ __('messages.currency_page.th_pct_change') }}</th>
+                                    <th class="px-4 py-3">{{ __('messages.currency_page.th_market_region') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
@@ -472,16 +472,16 @@
 
                 <!-- TAB 2: SUKU BUNGA ACUAN BANK SENTRAL -->
                 <div id="pane-tab-interest" class="tab-pane hidden space-y-4">
-                    <p class="text-xs text-slate-500">Suku bunga acuan mempengaruhi biaya pembiayaan modal kerja ekspor, penerbitan Letter of Credit (LC), dan sewa armada kapal.</p>
+                    <p class="text-xs text-slate-500">{{ __('messages.currency_page.policy_rates_sub') }}</p>
                     <div class="overflow-x-auto rounded-2xl border border-slate-200">
                         <table class="min-w-full text-left text-xs">
                             <thead class="bg-slate-50 font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200">
                                 <tr>
-                                    <th class="px-4 py-3">Bank Sentral / Lembaga</th>
-                                    <th class="px-4 py-3">Instrumen Acuan</th>
-                                    <th class="px-4 py-3">Suku Bunga</th>
-                                    <th class="px-4 py-3">Arah Kebijakan</th>
-                                    <th class="px-4 py-3">Dampak terhadap Logistik & Ekspor</th>
+                                    <th class="px-4 py-3">{{ __('messages.currency_page.th_central_bank') }}</th>
+                                    <th class="px-4 py-3">{{ __('messages.currency_page.th_instrument') }}</th>
+                                    <th class="px-4 py-3">{{ __('messages.currency_page.th_interest_rate') }}</th>
+                                    <th class="px-4 py-3">{{ __('messages.currency_page.th_policy_stance') }}</th>
+                                    <th class="px-4 py-3">{{ __('messages.currency_page.th_export_impact') }}</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
@@ -511,7 +511,7 @@
 
                 <!-- TAB 3: SUHU & CUACA PELABUHAN -->
                 <div id="pane-tab-weather" class="tab-pane hidden space-y-4">
-                    <p class="text-xs text-slate-500">Kondisi meteorologi di pelabuhan ekspor dan transshipment internasional Mayora (via Open-Meteo API).</p>
+                    <p class="text-xs text-slate-500">{{ __('messages.dashboard.operations_context.weather_disclaimer') }}</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                         @if(!empty($marketTelemetry['port_weathers']))
                             @foreach($marketTelemetry['port_weathers'] as $w)
@@ -530,7 +530,7 @@
                                         <span class="text-xl font-black text-slate-800">{{ $w['temp'] }}°C</span>
                                         <span class="text-[11px] font-semibold text-teal-700">{{ $w['condition'] }}</span>
                                     </div>
-                                    <div class="mt-1 text-[10px] text-slate-400">Kecepatan Angin: <strong>{{ $w['wind_knots'] }} kts</strong></div>
+                                    <div class="mt-1 text-[10px] text-slate-400">{{ __('messages.dashboard.operations_context.wind_speed') }}: <strong>{{ $w['wind_knots'] }} kts</strong></div>
                                 </div>
                             @endforeach
                         @endif
@@ -545,8 +545,8 @@
                                class="block rounded-2xl border border-slate-200 bg-white p-4 shadow-sm hover:border-ocean-500 hover:bg-cyan-50/30 transition">
                                 <h4 class="font-bold text-slate-900 text-sm hover:text-ocean-700">{{ $n['title'] }}</h4>
                                 <div class="mt-2 flex items-center justify-between text-xs text-slate-400">
-                                    <span>Sumber: <strong class="text-slate-600">{{ $n['source']['name'] ?? 'Logistics Wire' }}</strong></span>
-                                    <span class="font-semibold text-ocean-600">Baca Selengkapnya →</span>
+                                    <span>{{ __('messages.dashboard.operations_context.source') }}: <strong class="text-slate-600">{{ $n['source']['name'] ?? 'Logistics Wire' }}</strong></span>
+                                    <span class="font-semibold text-ocean-600">{{ __('messages.dashboard.operations_context.read_more') }}</span>
                                 </div>
                             </a>
                         @endforeach
@@ -556,9 +556,9 @@
 
             <!-- Modal Footer -->
             <div class="border-t border-slate-100 bg-slate-50 px-6 py-3 flex items-center justify-between text-xs text-slate-400">
-                <span>Sumber Data: <strong>Open-Meteo, Frankfurter European Central Bank, & Mayora Supply Chain Wire</strong></span>
+                <span>Sumber Data: <strong>Open-Meteo, European Central Bank, & Mayora Supply Chain Wire</strong></span>
                 <button type="button" onclick="closeMarketModal()" class="rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white hover:bg-slate-800 transition">
-                    Tutup
+                    {{ __('messages.modal.close') }}
                 </button>
             </div>
         </div>

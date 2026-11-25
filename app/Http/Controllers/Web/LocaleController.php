@@ -11,8 +11,13 @@ class LocaleController extends Controller
 {
     public function switch(Request $request, string $locale): RedirectResponse
     {
-        if (in_array($locale, SetLocale::SUPPORTED_LOCALES, true)) {
-            session(['locale' => $locale]);
+        $normalized = strtolower(trim($locale));
+        if ($normalized === 'cn') {
+            $normalized = 'zh';
+        }
+
+        if (in_array($normalized, SetLocale::SUPPORTED_LOCALES, true)) {
+            session(['locale' => $normalized]);
         }
 
         return redirect()->back();

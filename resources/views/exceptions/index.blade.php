@@ -1,19 +1,26 @@
 @extends('layouts.app')
 
-@section('title', 'Exceptions')
-@section('page-title', 'Exceptions')
+@section('title', __('messages.page_titles.exceptions'))
+@section('page-title', __('messages.nav.exceptions'))
 
 @section('content')
 <div class="space-y-5 p-5 md:p-8">
     <div>
-        <h2 class="text-2xl font-bold text-slate-900">Shipment exceptions</h2>
-        <p class="mt-1 text-sm text-slate-500">Review reported disruptions and resolution progress.</p>
+        <h2 class="text-2xl font-bold text-slate-900">{{ __('messages.exceptions_page.title') }}</h2>
+        <p class="mt-1 text-sm text-slate-500">{{ __('messages.exceptions_page.sub') }}</p>
     </div>
     <section class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div class="overflow-x-auto">
             <table class="min-w-full text-left text-sm">
                 <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                    <tr><th class="px-5 py-3">Shipment</th><th class="px-5 py-3">Exception</th><th class="px-5 py-3">Severity</th><th class="px-5 py-3">Impact</th><th class="px-5 py-3">Detected</th><th class="px-5 py-3">Status</th></tr>
+                    <tr>
+                        <th class="px-5 py-3">{{ __('messages.exceptions_page.th_shipment') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.exceptions_page.th_type') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.exceptions_page.th_severity') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.exceptions_page.th_impact') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.exceptions_page.th_detected') }}</th>
+                        <th class="px-5 py-3">{{ __('messages.exceptions_page.th_status') }}</th>
+                    </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($exceptions as $exception)
@@ -26,7 +33,7 @@
                             <td class="whitespace-nowrap px-5 py-4"><span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $exception->status === 'RESOLVED' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800' }}">{{ str_replace('_', ' ', $exception->status) }}</span></td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="px-5 py-12 text-center text-slate-500">No exceptions found.</td></tr>
+                        <tr><td colspan="6" class="px-5 py-12 text-center text-slate-500">{{ __('messages.exceptions_page.no_exceptions') }}</td></tr>
                     @endforelse
                 </tbody>
             </table>

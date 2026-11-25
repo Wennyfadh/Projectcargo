@@ -1,11 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Live Tracking · ' . $shipment->shipment_number)
-@section('page-title', 'Live Maritime Tracking')
+@section('title', __('messages.page_titles.tracking_detail') . ' · ' . $shipment->shipment_number)
+@section('page-title', __('messages.nav.tracking'))
 
 @push('head')
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <!-- Globe.gl 3D Earth Library -->
+    <script src="{{ asset('vendor/globe/globe.gl.min.js') }}"></script>
+    <script>
+        if (typeof Globe === 'undefined') {
+            document.write('<script src="https://unpkg.com/globe.gl@2.46.2/dist/globe.gl.min.js"><\/script>');
+        }
+    </script>
     <style>
         /* Map container setup */
         #liveTrackingMap {
@@ -205,13 +212,13 @@
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Kembali ke Daftar Tracking
+            {{ __('messages.tracking_page.view_all_shipments') }}
         </a>
 
         <div class="flex flex-wrap items-center gap-2">
             <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
                 <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                AIS Satellite Signal: Active
+                {{ __('messages.tracking_page.badge') }}
             </span>
             <span class="rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-800">
                 PT Mayora Indah Tbk Global Trade
@@ -266,11 +273,11 @@
                     ];
                 @endphp
                 <span class="rounded-full px-4 py-1.5 text-sm font-bold shadow-sm ring-1 ring-inset {{ $statusStyles[$shipment->status] ?? 'bg-slate-100 text-slate-700 ring-slate-200' }}">
-                    {{ str_replace('_', ' ', $shipment->status) }}
+                    {{ __('messages.statuses.' . $shipment->status) ?? str_replace('_', ' ', $shipment->status) }}
                 </span>
                 <span class="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-semibold {{ $delayStyles[$shipment->delay_status] ?? 'bg-slate-50 text-slate-600 border-slate-200' }}">
                     <span class="h-1.5 w-1.5 rounded-full {{ $shipment->delay_status === 'ON_TIME' ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
-                    {{ str_replace('_', ' ', $shipment->delay_status) }}
+                    {{ __('messages.delays.' . $shipment->delay_status) ?? str_replace('_', ' ', $shipment->delay_status) }}
                     @if($shipment->delay_duration_hours > 0)
                         (+{{ $shipment->delay_duration_hours }}h)
                     @endif
@@ -336,9 +343,24 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2.5">
+                <!-- 2D Map vs 3D Globe View Switcher -->
+                <div class="inline-flex items-center rounded-xl border border-slate-200 bg-white p-1 text-xs shadow-xs">
+                    <button type="button" id="btnDetailMap2D" onclick="switchDetailMapView('2D')"
+                            title="{{ __('messages.dashboard.map.view_2d_title') }}"
+                            class="map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-bold bg-navy-900 text-cyan-300 shadow-xs transition">
+                        <span>{{ __('messages.dashboard.map.view_2d') }}</span>
+                    </button>
+                    <button type="button" id="btnDetailMap3D" onclick="switchDetailMapView('3D')"
+                            title="{{ __('messages.dashboard.map.view_3d_title') }}"
+                            class="map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-semibold text-slate-600 hover:text-slate-900 transition">
+                        <span>{{ __('messages.dashboard.map.view_3d') }}</span>
+                        <span class="rounded bg-teal-500/20 px-1 py-0.5 text-[9px] font-black text-teal-700 uppercase">3D</span>
+                    </button>
+                </div>
+
                 <!-- Interactive Transport Mode Switcher / Simulator (Bagian 2) -->
-                <div class="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-xs">
-                    <span class="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Uji Moda:</span>
+                <div class="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 text-xs shadow-xs">
+                    <span class="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Moda:</span>
                     <button type="button" onclick="switchTransportMode('SEA')" id="btnModeSEA"
                             class="mode-switch-btn inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-semibold transition hover:bg-slate-50">
                         🚢 Laut
@@ -368,9 +390,39 @@
             </div>
         </div>
 
-        <!-- The Leaflet Map Container -->
+        <!-- The Map Container (2D Leaflet and 3D Globe) -->
         <div class="relative">
+            <!-- 2D Leaflet Map -->
             <div id="liveTrackingMap"></div>
+
+            <!-- 3D Globe Container (Globe.gl) -->
+            <div id="liveTrackingGlobeContainer" class="hidden min-h-[540px] w-full overflow-hidden rounded-b-2xl bg-[#040d1a] relative">
+                <!-- Floating Controls in Top-Left (Weather card stays on top-right) -->
+                <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
+                    <button type="button" id="btnDetailGlobeAutoRotate" onclick="toggleDetailGlobeAutoRotate()"
+                            title="{{ __('messages.dashboard.map.auto_rotate') }}"
+                            class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-cyan-300 shadow-lg backdrop-blur-md transition hover:bg-navy-900">
+                        <span id="detailGlobeAutoRotateIcon" class="inline-block transition-transform duration-500 animate-spin">🔄</span>
+                        <span id="detailGlobeAutoRotateText">{{ __('messages.dashboard.map.auto_rotate') }}</span>
+                    </button>
+                    <button type="button" onclick="resetDetailGlobeView()"
+                            title="{{ __('messages.dashboard.map.reset_view') }}"
+                            class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-slate-200 shadow-lg backdrop-blur-md transition hover:bg-navy-900 hover:text-white">
+                        <span>🎯</span>
+                        <span>{{ __('messages.dashboard.map.reset_view') }}</span>
+                    </button>
+                </div>
+
+                <!-- Globe Hint in Bottom-Left -->
+                <div class="pointer-events-none absolute bottom-4 left-4 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-navy-950/80 px-3.5 py-2 text-xs text-slate-300 shadow-xl backdrop-blur-md">
+                    <span class="flex items-center gap-1.5 font-bold text-teal-300">
+                        <span class="h-2 w-2 rounded-full bg-teal-400 animate-ping"></span>
+                        <span>{{ $shipment->shipment_number }}</span>
+                    </span>
+                    <span class="text-white/20">|</span>
+                    <span class="text-[11px] text-slate-400">{{ __('messages.dashboard.map.globe_hint') }}</span>
+                </div>
+            </div>
 
             <!-- Floating Top-Right Glassmorphism Card: Live Marine Weather via Open-Meteo API -->
             <div class="pointer-events-auto absolute top-4 right-4 z-[900] w-64 md:w-72 rounded-2xl border border-white/60 bg-white/90 p-3.5 shadow-xl backdrop-blur-md transition-all">
@@ -974,6 +1026,11 @@
             if (headerBadge) {
                 headerBadge.className = `inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-bold shadow-xs ring-1 ring-inset ${cfg.badgeBg}`;
             }
+
+            // 7. Update 3D Globe if initialized
+            if (typeof updateDetailGlobeData === 'function') {
+                updateDetailGlobeData(mode);
+            }
         };
 
         // Initialize button highlight matching current mode
@@ -1102,5 +1159,239 @@
                 syncButton.disabled = false;
             }
         });
+
+        // 8. 3D Globe Implementation for Tracking Detail (Globe.gl)
+        let detailViewMode = '2D';
+        let detailGlobeInstance = null;
+        let isDetailGlobeAutoRotating = true;
+
+        const detailGlobeContainer = document.getElementById('liveTrackingGlobeContainer');
+        const detailMap2DContainer = document.getElementById('liveTrackingMap');
+        const recenterDetailBtn = document.getElementById('btnRecenter');
+
+        window.switchDetailMapView = function(mode) {
+            detailViewMode = mode;
+            const btn2D = document.getElementById('btnDetailMap2D');
+            const btn3D = document.getElementById('btnDetailMap3D');
+
+            if (mode === '3D') {
+                btn3D.className = 'map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-bold bg-navy-900 text-cyan-300 shadow-xs transition';
+                btn2D.className = 'map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-semibold text-slate-600 hover:text-slate-900 transition';
+                detailMap2DContainer.classList.add('hidden');
+                if (recenterDetailBtn) recenterDetailBtn.classList.add('hidden');
+                detailGlobeContainer.classList.remove('hidden');
+
+                if (!detailGlobeInstance) {
+                    initDetailGlobe3D();
+                } else {
+                    detailGlobeInstance.resumeAnimation();
+                    resizeDetailGlobe();
+                }
+            } else {
+                btn2D.className = 'map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-bold bg-navy-900 text-cyan-300 shadow-xs transition';
+                btn3D.className = 'map-view-btn flex items-center gap-1.5 rounded-lg px-3 py-1 font-semibold text-slate-600 hover:text-slate-900 transition';
+                detailGlobeContainer.classList.add('hidden');
+                detailMap2DContainer.classList.remove('hidden');
+                if (recenterDetailBtn) recenterDetailBtn.classList.remove('hidden');
+
+                if (detailGlobeInstance) {
+                    detailGlobeInstance.pauseAnimation();
+                }
+                setTimeout(() => {
+                    map.invalidateSize();
+                }, 100);
+            }
+        };
+
+        function resizeDetailGlobe() {
+            if (!detailGlobeInstance || !detailGlobeContainer) return;
+            const width = detailGlobeContainer.clientWidth || 800;
+            const height = detailGlobeContainer.clientHeight || 540;
+            detailGlobeInstance.width(width).height(height);
+        }
+
+        function initDetailGlobe3D() {
+            if (typeof Globe === 'undefined') {
+                console.error('Globe.gl not loaded');
+                return;
+            }
+
+            const width = detailGlobeContainer.clientWidth || 800;
+            const height = detailGlobeContainer.clientHeight || 540;
+
+            const blueMarbleUrl = "{{ asset('vendor/globe/earth-blue-marble.jpg') }}";
+            const nightSkyUrl = "{{ asset('vendor/globe/night-sky.png') }}";
+            const bumpUrl = "{{ asset('vendor/globe/earth-night.jpg') }}";
+
+            detailGlobeInstance = Globe()(detailGlobeContainer)
+                .globeImageUrl(blueMarbleUrl)
+                .backgroundImageUrl(nightSkyUrl)
+                .bumpImageUrl(bumpUrl)
+                .showAtmosphere(true)
+                .atmosphereColor('#38bdf8')
+                .atmosphereAltitude(0.22)
+                .width(width)
+                .height(height);
+
+            // Center on midpoint between origin and destination
+            const midLat = (originPos[0] + destPos[0]) / 2;
+            const midLng = (originPos[1] + destPos[1]) / 2;
+            detailGlobeInstance.pointOfView({ lat: midLat, lng: midLng, altitude: 1.8 }, 0);
+
+            detailGlobeInstance.controls().autoRotate = true;
+            detailGlobeInstance.controls().autoRotateSpeed = 0.6;
+            detailGlobeInstance.controls().enableDamping = true;
+            detailGlobeInstance.controls().dampingFactor = 0.08;
+
+            detailGlobeContainer.addEventListener('pointerdown', () => {
+                if (isDetailGlobeAutoRotating && detailGlobeInstance) {
+                    detailGlobeInstance.controls().autoRotate = false;
+                }
+            });
+
+            detailGlobeContainer.addEventListener('pointerup', () => {
+                if (isDetailGlobeAutoRotating && detailGlobeInstance) {
+                    setTimeout(() => {
+                        if (isDetailGlobeAutoRotating && detailGlobeInstance) {
+                            detailGlobeInstance.controls().autoRotate = true;
+                        }
+                    }, 2500);
+                }
+            });
+
+            updateDetailGlobeData(activeMode);
+            window.addEventListener('resize', resizeDetailGlobe);
+        }
+
+        window.toggleDetailGlobeAutoRotate = function() {
+            if (!detailGlobeInstance) return;
+            isDetailGlobeAutoRotating = !isDetailGlobeAutoRotating;
+            detailGlobeInstance.controls().autoRotate = isDetailGlobeAutoRotating;
+
+            const icon = document.getElementById('detailGlobeAutoRotateIcon');
+            const btn = document.getElementById('btnDetailGlobeAutoRotate');
+            if (isDetailGlobeAutoRotating) {
+                if (icon) icon.className = 'inline-block transition-transform duration-500 animate-spin';
+                if (btn) btn.className = 'flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-cyan-300 shadow-lg backdrop-blur-md transition hover:bg-navy-900';
+            } else {
+                if (icon) icon.className = 'inline-block transition-transform duration-500';
+                if (btn) btn.className = 'flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/50 px-3 py-1.5 text-xs font-bold text-slate-400 shadow-lg backdrop-blur-md transition hover:bg-navy-900 hover:text-white';
+            }
+        };
+
+        window.resetDetailGlobeView = function() {
+            if (!detailGlobeInstance) return;
+            detailGlobeInstance.pointOfView({ lat: currentPos[0], lng: currentPos[1], altitude: 1.6 }, 1000);
+        };
+
+        function updateDetailGlobeData(mode) {
+            if (!detailGlobeInstance) return;
+
+            const arcColors = mode === 'AIR'
+                ? ['#38bdf8', '#0284c7']
+                : (mode === 'ROAD' ? ['#34d399', '#059669'] : ['#2dd4bf', '#00a884']);
+
+            // 1. Great-Circle 3D Route Arc
+            const arcs = [
+                {
+                    startLat: originPos[0],
+                    startLng: originPos[1],
+                    endLat: destPos[0],
+                    endLng: destPos[1],
+                    color: arcColors,
+                    altitude: mode === 'AIR' ? 0.35 : (mode === 'ROAD' ? 0.12 : 0.22),
+                    stroke: mode === 'AIR' ? 2.5 : 2.0
+                }
+            ];
+
+            detailGlobeInstance
+                .arcsData(arcs)
+                .arcColor('color')
+                .arcAltitude('altitude')
+                .arcStroke('stroke')
+                .arcDashLength(0.4)
+                .arcDashGap(0.2)
+                .arcDashAnimateTime(2000)
+                .arcLabel(() => `
+                    <div style="background: rgba(7, 26, 45, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); padding: 10px 14px; border-radius: 12px; color: #fff; font-family: 'DM Sans', sans-serif; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                        <div style="font-size: 11px; font-weight: 800; color: #38bdf8; text-transform: uppercase;">{{ $shipment->shipment_number }}</div>
+                        <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">📍 {{ $shipment->origin?->city ?? 'Origin' }} ➔ {{ $shipment->destination?->city ?? 'Destination' }}</div>
+                        <div style="font-size: 11px; color: #2dd4bf; margin-top: 4px;">{{ $shipment->transport_mode_icon }} {{ $shipment->vehicle_identifier ?? $shipment->vessel_name }}</div>
+                    </div>
+                `);
+
+            // 2. Sonar Rings at Origin and Destination
+            const rings = [
+                { lat: originPos[0], lng: originPos[1], maxR: 4.5, propSpeed: 2, repeatPeriod: 1200, color: '#10b981' },
+                { lat: destPos[0], lng: destPos[1], maxR: 3.5, propSpeed: 1.5, repeatPeriod: 1500, color: '#00a884' }
+            ];
+
+            detailGlobeInstance
+                .ringsData(rings)
+                .ringColor(d => d.color)
+                .ringMaxRadius(d => d.maxR)
+                .ringPropagationSpeed(d => d.propSpeed)
+                .ringRepeatPeriod(d => d.repeatPeriod);
+
+            // 3. HTML Markers (Origin Port, Live Vehicle, Destination Port)
+            const vehicleIcon = mode === 'AIR' ? '✈️' : (mode === 'ROAD' ? '🚛' : '🚢');
+            const markers = [
+                {
+                    lat: originPos[0],
+                    lng: originPos[1],
+                    type: 'origin',
+                    name: 'Origin: {{ $shipment->origin?->name ?? 'Tanjung Priok' }}'
+                },
+                {
+                    lat: currentPos[0],
+                    lng: currentPos[1],
+                    type: 'vehicle',
+                    name: '{{ $shipment->shipment_number }}',
+                    icon: vehicleIcon
+                },
+                {
+                    lat: destPos[0],
+                    lng: destPos[1],
+                    type: 'destination',
+                    name: 'Destination: ' + destinationFullLabel
+                }
+            ];
+
+            detailGlobeInstance
+                .htmlElementsData(markers)
+                .htmlElement(d => {
+                    const el = document.createElement('div');
+                    if (d.type === 'vehicle') {
+                        const bg = mode === 'AIR' ? 'rgba(2, 132, 199, 0.95)' : (mode === 'ROAD' ? 'rgba(5, 150, 105, 0.95)' : 'rgba(0, 168, 132, 0.95)');
+                        el.innerHTML = `
+                            <div style="cursor: pointer; text-align: center; transform: translate(-50%, -100%);">
+                                <div style="display: inline-flex; align-items: center; gap: 5px; background: ${bg}; border: 2px solid #fff; padding: 4px 10px; border-radius: 20px; color: #fff; font-size: 11px; font-weight: 800; box-shadow: 0 6px 20px rgba(0,0,0,0.5);">
+                                    <span style="font-size: 15px;">${d.icon}</span>
+                                    <span style="font-family: monospace;">${d.name}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else if (d.type === 'origin') {
+                        el.innerHTML = `
+                            <div style="cursor: default; text-align: center; transform: translate(-50%, -100%);">
+                                <div style="display: inline-flex; align-items: center; gap: 4px; background: rgba(6, 78, 59, 0.95); border: 1.5px solid #10b981; padding: 2px 8px; border-radius: 16px; color: #6ee7b7; font-size: 10px; font-weight: 800;">
+                                    <span>🏭</span>
+                                    <span>ORIGIN</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        el.innerHTML = `
+                            <div style="cursor: default; text-align: center; transform: translate(-50%, -100%);">
+                                <div style="display: inline-flex; align-items: center; gap: 4px; background: rgba(15, 23, 42, 0.95); border: 1.5px solid #38bdf8; padding: 2px 8px; border-radius: 16px; color: #7dd3fc; font-size: 10px; font-weight: 800;">
+                                    <span>🏁</span>
+                                    <span>DEST</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    return el;
+                });
+        }
     </script>
 @endpush
