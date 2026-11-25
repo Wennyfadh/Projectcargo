@@ -397,24 +397,27 @@
 
             <!-- 3D Globe Container (Globe.gl) -->
             <div id="liveTrackingGlobeContainer" class="hidden min-h-[540px] w-full overflow-hidden rounded-b-2xl bg-[#040d1a] relative">
+                <!-- Dedicated WebGL Canvas Mount -->
+                <div id="detailGlobeCanvasMount" class="absolute inset-0 w-full h-full z-0"></div>
+
                 <!-- Floating Controls in Top-Left (Weather card stays on top-right) -->
-                <div class="absolute top-4 left-4 z-20 flex items-center gap-2">
+                <div class="pointer-events-auto absolute top-4 left-4 z-30 flex items-center gap-2">
                     <button type="button" id="btnDetailGlobeAutoRotate" onclick="toggleDetailGlobeAutoRotate()"
                             title="{{ __('messages.dashboard.map.auto_rotate') }}"
-                            class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-cyan-300 shadow-lg backdrop-blur-md transition hover:bg-navy-900">
+                            class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/90 px-3 py-1.5 text-xs font-bold text-cyan-300 shadow-lg backdrop-blur-md transition hover:bg-navy-900 cursor-pointer">
                         <span id="detailGlobeAutoRotateIcon" class="inline-block transition-transform duration-500 animate-spin">🔄</span>
                         <span id="detailGlobeAutoRotateText">{{ __('messages.dashboard.map.auto_rotate') }}</span>
                     </button>
-                    <button type="button" onclick="resetDetailGlobeView()"
+                    <button type="button" id="btnDetailGlobeResetView" onclick="resetDetailGlobeView()"
                             title="{{ __('messages.dashboard.map.reset_view') }}"
-                            class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-slate-200 shadow-lg backdrop-blur-md transition hover:bg-navy-900 hover:text-white">
+                            class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/90 px-3 py-1.5 text-xs font-bold text-slate-200 shadow-lg backdrop-blur-md transition hover:bg-navy-900 hover:text-white cursor-pointer">
                         <span>🎯</span>
                         <span>{{ __('messages.dashboard.map.reset_view') }}</span>
                     </button>
                 </div>
 
                 <!-- Globe Hint in Bottom-Left -->
-                <div class="pointer-events-none absolute bottom-4 left-4 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-navy-950/80 px-3.5 py-2 text-xs text-slate-300 shadow-xl backdrop-blur-md">
+                <div class="pointer-events-none absolute bottom-4 left-4 z-30 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-navy-950/85 px-3.5 py-2 text-xs text-slate-300 shadow-xl backdrop-blur-md">
                     <span class="flex items-center gap-1.5 font-bold text-teal-300">
                         <span class="h-2 w-2 rounded-full bg-teal-400 animate-ping"></span>
                         <span>{{ $shipment->shipment_number }}</span>
@@ -680,6 +683,11 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
+        // 3D Globe Global State (Hoisted to top of script)
+        var detailGlobeInstance = null;
+        var detailViewMode = '2D';
+        var isDetailGlobeAutoRotating = true;
+
         // Server Telemetry Payload
         const telemetryData = @json($telemetry);
         const shipmentData = @json($shipment);
@@ -1161,10 +1169,6 @@
         });
 
         // 8. 3D Globe Implementation for Tracking Detail (Globe.gl)
-        let detailViewMode = '2D';
-        let detailGlobeInstance = null;
-        let isDetailGlobeAutoRotating = true;
-
         const detailGlobeContainer = document.getElementById('liveTrackingGlobeContainer');
         const detailMap2DContainer = document.getElementById('liveTrackingMap');
         const recenterDetailBtn = document.getElementById('btnRecenter');
@@ -1204,9 +1208,11 @@
         };
 
         function resizeDetailGlobe() {
-            if (!detailGlobeInstance || !detailGlobeContainer) return;
-            const width = detailGlobeContainer.clientWidth || 800;
-            const height = detailGlobeContainer.clientHeight || 540;
+            if (!detailGlobeInstance) return;
+            const mount = document.getElementById('detailGlobeCanvasMount');
+            if (!mount) return;
+            const width = mount.clientWidth || 800;
+            const height = mount.clientHeight || 540;
             detailGlobeInstance.width(width).height(height);
         }
 
@@ -1216,14 +1222,17 @@
                 return;
             }
 
-            const width = detailGlobeContainer.clientWidth || 800;
-            const height = detailGlobeContainer.clientHeight || 540;
+            const mount = document.getElementById('detailGlobeCanvasMount');
+            if (!mount) return;
+
+            const width = mount.clientWidth || 800;
+            const height = mount.clientHeight || 540;
 
             const blueMarbleUrl = "{{ asset('vendor/globe/earth-blue-marble.jpg') }}";
             const nightSkyUrl = "{{ asset('vendor/globe/night-sky.png') }}";
             const bumpUrl = "{{ asset('vendor/globe/earth-night.jpg') }}";
 
-            detailGlobeInstance = Globe()(detailGlobeContainer)
+            detailGlobeInstance = Globe()(mount)
                 .globeImageUrl(blueMarbleUrl)
                 .backgroundImageUrl(nightSkyUrl)
                 .bumpImageUrl(bumpUrl)
@@ -1259,7 +1268,7 @@
                 }
             });
 
-            updateDetailGlobeData(activeMode);
+            updateDetailGlobeData(currentActiveMode);
             window.addEventListener('resize', resizeDetailGlobe);
         }
 
@@ -1361,6 +1370,9 @@
                 .htmlElementsData(markers)
                 .htmlElement(d => {
                     const el = document.createElement('div');
+                    el.style.pointerEvents = 'auto';
+                    el.style.cursor = 'pointer';
+
                     if (d.type === 'vehicle') {
                         const bg = mode === 'AIR' ? 'rgba(2, 132, 199, 0.95)' : (mode === 'ROAD' ? 'rgba(5, 150, 105, 0.95)' : 'rgba(0, 168, 132, 0.95)');
                         el.innerHTML = `

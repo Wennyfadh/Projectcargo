@@ -251,24 +251,27 @@
 
                 <!-- 3D Globe Container (Globe.gl) -->
                 <div id="globe3dContainer" class="hidden h-96 md:h-[440px] w-full overflow-hidden rounded-xl border border-slate-800 bg-[#040d1a] relative">
-                    <!-- Globe Controls in Top-Right -->
-                    <div class="absolute top-3 right-3 z-20 flex items-center gap-2">
+                    <!-- Dedicated WebGL Canvas Mount (Globe.gl renders strictly inside here) -->
+                    <div id="globeCanvasMount" class="absolute inset-0 w-full h-full z-0"></div>
+
+                    <!-- Globe Controls in Top-Right (z-30 ensures permanently visible & clickable above 3D canvas) -->
+                    <div class="pointer-events-auto absolute top-3 right-3 z-30 flex items-center gap-2">
                         <button type="button" id="btnGlobeAutoRotate" onclick="toggleGlobeAutoRotate()"
                                 title="{{ __('messages.dashboard.map.auto_rotate') }}"
-                                class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-cyan-300 shadow-lg backdrop-blur-md transition hover:bg-navy-900">
-                            <span id="globeAutoRotateIcon" class="inline-block transition-transform duration-500">🔄</span>
+                                class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/90 px-3 py-1.5 text-xs font-bold text-cyan-300 shadow-xl backdrop-blur-md transition hover:bg-navy-900 cursor-pointer">
+                            <span id="globeAutoRotateIcon" class="inline-block transition-transform duration-500 animate-spin">🔄</span>
                             <span id="globeAutoRotateText">{{ __('messages.dashboard.map.auto_rotate') }}</span>
                         </button>
-                        <button type="button" onclick="resetGlobeView()"
+                        <button type="button" id="btnGlobeResetView" onclick="resetGlobeView()"
                                 title="{{ __('messages.dashboard.map.reset_view') }}"
-                                class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-slate-200 shadow-lg backdrop-blur-md transition hover:bg-navy-900 hover:text-white">
+                                class="flex items-center gap-1.5 rounded-xl border border-white/20 bg-navy-950/90 px-3 py-1.5 text-xs font-bold text-slate-200 shadow-xl backdrop-blur-md transition hover:bg-navy-900 hover:text-white cursor-pointer">
                             <span>🎯</span>
                             <span>{{ __('messages.dashboard.map.reset_view') }}</span>
                         </button>
                     </div>
 
                     <!-- Globe Legend in Bottom-Left -->
-                    <div class="pointer-events-none absolute bottom-3 left-3 z-20 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-navy-950/80 px-3 py-1.5 text-xs text-slate-300 shadow-xl backdrop-blur-md">
+                    <div class="pointer-events-none absolute bottom-3 left-3 z-30 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-navy-950/85 px-3 py-1.5 text-xs text-slate-300 shadow-xl backdrop-blur-md">
                         <span class="flex items-center gap-1 font-bold text-teal-300">
                             <span class="h-2 w-2 rounded-full bg-teal-400 animate-ping"></span>
                             <span>Mayora Hub (ID)</span>
@@ -284,7 +287,7 @@
                     </div>
 
                     <!-- Floating Interactive Shipment Card on 3D Globe -->
-                    <div id="globeShipmentCard" class="hidden absolute top-4 left-4 z-30 max-w-xs sm:max-w-sm rounded-2xl border border-cyan-400/30 bg-navy-950/95 p-4 text-white shadow-2xl backdrop-blur-md transition-all">
+                    <div id="globeShipmentCard" class="hidden pointer-events-auto absolute top-3 left-3 z-40 max-w-xs sm:max-w-sm rounded-2xl border border-cyan-400/40 bg-navy-950/95 p-4 text-white shadow-2xl backdrop-blur-md transition-all">
                         <div class="flex items-start justify-between gap-3 border-b border-white/10 pb-2">
                             <div class="flex items-center gap-2">
                                 <span id="globeCardModeIcon" class="text-lg">🚢</span>
@@ -293,7 +296,7 @@
                                     <h4 id="globeCardShipmentNo" class="text-sm font-black text-white">CT-SHIPMENT</h4>
                                 </div>
                             </div>
-                            <button type="button" onclick="closeGlobeShipmentCard()" class="rounded-lg p-1 text-slate-400 hover:bg-white/10 hover:text-white">✕</button>
+                            <button type="button" onclick="closeGlobeShipmentCard()" class="rounded-lg p-1 text-slate-400 hover:bg-white/10 hover:text-white cursor-pointer">✕</button>
                         </div>
                         <div class="mt-2.5 space-y-1.5 text-xs text-slate-300">
                             <div class="flex items-center justify-between">
@@ -735,9 +738,11 @@
         };
 
         function resizeGlobe() {
-            if (!globeInstance || !globeContainer) return;
-            const width = globeContainer.clientWidth || 800;
-            const height = globeContainer.clientHeight || 440;
+            if (!globeInstance) return;
+            const mount = document.getElementById('globeCanvasMount');
+            if (!mount) return;
+            const width = mount.clientWidth || 800;
+            const height = mount.clientHeight || 440;
             globeInstance.width(width).height(height);
         }
 
@@ -747,14 +752,17 @@
                 return;
             }
 
-            const width = globeContainer.clientWidth || 800;
-            const height = globeContainer.clientHeight || 440;
+            const mount = document.getElementById('globeCanvasMount');
+            if (!mount) return;
+
+            const width = mount.clientWidth || 800;
+            const height = mount.clientHeight || 440;
 
             const blueMarbleUrl = "{{ asset('vendor/globe/earth-blue-marble.jpg') }}";
             const nightSkyUrl = "{{ asset('vendor/globe/night-sky.png') }}";
             const bumpUrl = "{{ asset('vendor/globe/earth-night.jpg') }}";
 
-            globeInstance = Globe()(globeContainer)
+            globeInstance = Globe()(mount)
                 .globeImageUrl(blueMarbleUrl)
                 .backgroundImageUrl(nightSkyUrl)
                 .bumpImageUrl(bumpUrl)
@@ -951,9 +959,13 @@
                 .htmlElementsData(markers)
                 .htmlElement(d => {
                     const el = document.createElement('div');
+                    el.style.pointerEvents = 'auto';
+                    el.style.cursor = 'pointer';
+
                     if (d.type === 'hub') {
+                        el.className = 'globe-origin-marker';
                         el.innerHTML = `
-                            <div style="cursor: pointer; text-align: center; transform: translate(-50%, -100%);">
+                            <div style="cursor: pointer; text-align: center; transform: translate(-50%, -100%); pointer-events: auto;">
                                 <div style="display: inline-flex; align-items: center; gap: 4px; background: rgba(6, 78, 59, 0.95); border: 1.5px solid #10b981; padding: 2px 7px; border-radius: 20px; color: #6ee7b7; font-size: 10px; font-weight: 800; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); backdrop-filter: blur(4px);">
                                     <span>🏭</span>
                                     <span>MAYORA HUB</span>
@@ -961,10 +973,11 @@
                             </div>
                         `;
                     } else {
+                        el.className = 'globe-vehicle-marker';
                         const bg = d.mode === 'AIR' ? 'rgba(2, 132, 199, 0.92)' : (d.mode === 'ROAD' ? 'rgba(5, 150, 105, 0.92)' : 'rgba(0, 168, 132, 0.92)');
                         const border = d.mode === 'AIR' ? '#7dd3fc' : (d.mode === 'ROAD' ? '#6ee7b7' : '#5eead4');
                         el.innerHTML = `
-                            <div style="cursor: pointer; text-align: center; transform: translate(-50%, -100%); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);"
+                            <div style="cursor: pointer; text-align: center; transform: translate(-50%, -100%); transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: auto;"
                                  onmouseover="this.style.transform='translate(-50%, -115%) scale(1.15)'"
                                  onmouseout="this.style.transform='translate(-50%, -100%) scale(1)'">
                                 <div style="display: inline-flex; align-items: center; gap: 4px; background: ${bg}; border: 1.5px solid ${border}; padding: 3px 8px; border-radius: 20px; color: #fff; font-size: 11px; font-weight: 800; box-shadow: 0 6px 18px rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
